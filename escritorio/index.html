@@ -1,0 +1,1186 @@
+<title>Escritório do KzziN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Silkscreen:wght@400;700&family=VT323&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --noite: #10131d;
+    --corredor: #161a28;
+    --corredor-2: #1a1f30;
+    --parede: #07080d;
+    --painel: #1b2034;
+    --painel-2: #232a44;
+    --painel-3: #0d1019;
+    --borda: #343c5f;
+    --texto: #eef0f7;
+    --suave: #a2aacb;
+    --fraco: #6f7798;
+    --ambar: #ffcf6e;
+    --noar: #57d68d;
+    --espera: #ffb547;
+    --erro: #ff5d6c;
+    --trab: #6cc6ff;
+    --desl: #5d6583;
+    --f-display: 'Silkscreen', 'Courier New', monospace;
+    --f-ui: 'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif;
+    --f-mono: 'VT323', Consolas, 'Courier New', monospace;
+    --sombra: 6px 6px 0 rgba(0, 0, 0, .38);
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { background: var(--noite); color: var(--texto); }
+  body { margin: 0; font-family: var(--f-ui); font-size: 16px; line-height: 1.4; }
+  button { font: inherit; color: inherit; }
+  a { color: var(--trab); }
+  :focus-visible { outline: 3px solid var(--ambar); outline-offset: 2px; }
+
+  /* ── placar (HUD) ── */
+  .hud {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px;
+    padding: 12px 16px; background: var(--painel);
+    border-bottom: 3px solid var(--parede); box-shadow: 0 4px 0 rgba(0, 0, 0, .3);
+  }
+  .marca { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 260px; }
+  .marca canvas { width: 40px; height: 40px; image-rendering: pixelated; flex: none; }
+  .marca h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 20px; letter-spacing: .03em; line-height: 1.1; text-wrap: balance; }
+  .fonte { margin: 2px 0 0; color: var(--suave); font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .fonte .luz { width: 8px; height: 8px; background: var(--noar); flex: none; }
+  .fonte.demo .luz { background: var(--ambar); }
+  .fonte.offline .luz { background: var(--erro); }
+  .placar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+  .placar > div {
+    min-width: 108px; padding: 6px 12px 7px; background: var(--painel-3);
+    border: 2px solid var(--borda); display: grid; gap: 1px;
+  }
+  .placar dt { font-size: 12px; color: var(--suave); text-transform: uppercase; letter-spacing: .06em; }
+  .placar dd { margin: 0; font-family: var(--f-display); font-size: 22px; line-height: 1; font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 4px; }
+  .placar dd small { font-size: 13px; color: var(--fraco); }
+  .placar .p-noar dd { color: var(--noar); }
+  .placar .p-trab dd { color: var(--trab); }
+  .placar .p-chama.tem { border-color: var(--espera); }
+  .placar .p-chama.tem dd { color: var(--espera); }
+  .relogio { font-family: var(--f-display); font-size: 22px; color: var(--ambar); font-variant-numeric: tabular-nums; }
+
+  .conteudo { padding-inline: 16px; padding-block: 16px 40px; max-width: 1680px; margin: 0 auto; display: grid; gap: 16px; }
+
+  .faixa {
+    display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap;
+    padding: 10px 14px; background: #2a2413; border: 2px solid #6b5520; color: #ffe3a3; font-size: 15px;
+  }
+  .faixa strong { font-family: var(--f-display); font-size: 12px; letter-spacing: .05em; color: var(--ambar); padding-top: 3px; }
+  .faixa p { margin: 0; flex: 1 1 320px; max-width: 80ch; }
+  .faixa code { font-family: var(--f-mono); font-size: 18px; color: #fff; }
+  .faixa.aviso { background: #2d1519; border-color: #7a2c36; color: #ffc9cf; }
+  .faixa.aviso strong { color: var(--erro); }
+
+  /* ── chamados ── */
+  .chamados { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chamados:empty { display: none; }
+  .chamado {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; cursor: pointer;
+    background: var(--painel); border: 2px solid var(--espera); color: var(--texto); font-size: 15px; text-align: left;
+  }
+  .chamado.erro { border-color: var(--erro); }
+  .chamado b { font-family: var(--f-display); font-size: 11px; padding: 2px 6px; background: var(--espera); color: #1d1406; letter-spacing: .04em; }
+  .chamado.erro b { background: var(--erro); color: #22060a; }
+  .chamado span { color: var(--suave); }
+  .chamado:hover { background: var(--painel-2); }
+
+  .barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  .barra h2 { margin: 0; font-family: var(--f-display); font-size: 13px; letter-spacing: .08em; color: var(--suave); font-weight: 400; }
+  .filtro { display: inline-flex; border: 2px solid var(--borda); }
+  .filtro button { background: var(--painel-3); border: 0; padding: 6px 12px; font-size: 14px; cursor: pointer; color: var(--suave); }
+  .filtro button[aria-pressed="true"] { background: var(--painel-2); color: var(--texto); box-shadow: inset 0 -3px 0 var(--ambar); }
+
+  /* ── o prédio ── */
+  .predio {
+    display: grid; gap: 22px; padding: 22px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    background-color: var(--corredor);
+    background-image: repeating-linear-gradient(90deg, var(--corredor) 0 32px, var(--corredor-2) 32px 64px);
+    border: 3px solid var(--parede);
+  }
+  .vazio-filtro { grid-column: 1 / -1; color: var(--suave); padding: 24px; text-align: center; }
+  .sala {
+    position: relative; display: grid; cursor: pointer; background: var(--parede);
+    border: 3px solid #05060a; box-shadow: var(--sombra); outline-offset: 3px;
+  }
+  .sala:hover { transform: translate(-1px, -1px); box-shadow: 7px 7px 0 rgba(0, 0, 0, .42); }
+  .sala.chama { outline: 3px solid var(--espera); }
+  .sala.chama.erro { outline-color: var(--erro); }
+  @media (prefers-reduced-motion: no-preference) {
+    .sala.chama { animation: chama 1.1s steps(2, jump-none) infinite; }
+    .sala { transition: transform .08s steps(2); }
+  }
+  @keyframes chama { 50% { outline-color: transparent; } }
+  .placa {
+    display: flex; align-items: center; gap: 8px; padding: 6px 8px; min-width: 0;
+    background: #171b2a; border-bottom: 2px solid #05060a;
+  }
+  .placa canvas { width: 16px; height: 16px; image-rendering: pixelated; flex: none; }
+  .placa h3 {
+    margin: 0; flex: 1; min-width: 0; font-family: var(--f-display); font-weight: 700; font-size: 13px;
+    letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .placa .auto { font-size: 11px; color: var(--fraco); font-family: var(--f-ui); flex: none; }
+  .pilula {
+    flex: none; font-family: var(--f-display); font-size: 10px; letter-spacing: .05em; padding: 3px 6px 2px;
+    background: var(--desl); color: #0b0d14; white-space: nowrap;
+  }
+  .pilula.no-ar { background: var(--noar); }
+  .pilula.erro { background: var(--erro); }
+  .pilula.desligado { background: #3a405c; color: #c9cee6; }
+  .pilula.uso { background: var(--trab); }
+  .pilula.vazia { background: #262b40; color: var(--fraco); }
+  .cena { position: relative; container-type: inline-size; }
+  .cena canvas { display: block; width: 100%; height: auto; aspect-ratio: 128 / 80; image-rendering: pixelated; }
+  .cracha {
+    position: absolute; transform: translate(-50%, 0); max-width: 22%;
+    font-size: clamp(9px, 3.3cqw, 13px); line-height: 1.15; padding: 1px 4px 2px;
+    background: rgba(9, 11, 20, .88); color: var(--texto); border: 1px solid rgba(255, 255, 255, .14);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
+  }
+  .cracha.voce { background: #2b4db8; border-color: #6f93ff; }
+  .cracha.esperando { border-color: var(--espera); color: #ffe0ad; }
+  .cracha.erro { border-color: var(--erro); color: #ffc6cc; }
+  .cracha.mais { right: 2%; left: auto; bottom: 3%; transform: none; font-family: var(--f-display); font-size: clamp(8px, 2.8cqw, 11px); }
+  .fatos {
+    display: flex; gap: 6px 12px; align-items: baseline; justify-content: space-between; flex-wrap: wrap;
+    padding: 6px 8px 7px; background: #171b2a; border-top: 2px solid #05060a; font-size: 13px; color: var(--suave);
+  }
+  .fatos .app { min-width: 0; flex: 1 1 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fatos .contas { display: flex; gap: 10px; flex: none; font-variant-numeric: tabular-nums; }
+  .fatos .contas b { color: var(--texto); font-weight: 600; }
+
+  /* ── painel de detalhes ── */
+  .fundo-painel { position: fixed; inset: 0; background: rgba(4, 5, 10, .55); z-index: 40; }
+  .painel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 50; width: min(470px, 100%);
+    background: var(--painel); border-left: 3px solid var(--parede); box-shadow: -6px 0 0 rgba(0, 0, 0, .3);
+    overflow-y: auto; overscroll-behavior: contain;
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 18px calc(env(safe-area-inset-bottom, 0px) + 28px);
+  }
+  @media (max-width: 640px) {
+    .painel { top: auto; height: 84%; width: 100%; border-left: 0; border-top: 3px solid var(--parede); box-shadow: 0 -6px 0 rgba(0, 0, 0, .3); padding-top: 16px; }
+  }
+  .painel-topo { display: flex; align-items: flex-start; gap: 12px; }
+  .painel-topo canvas { width: 32px; height: 32px; image-rendering: pixelated; flex: none; margin-top: 2px; }
+  .painel-topo h2 { margin: 0; font-family: var(--f-display); font-size: 18px; line-height: 1.15; text-wrap: balance; }
+  .painel-topo .pilula { margin-top: 6px; display: inline-block; }
+  .fechar {
+    margin-left: auto; flex: none; width: 36px; height: 36px; cursor: pointer; background: var(--painel-3);
+    border: 2px solid var(--borda); font-family: var(--f-display); font-size: 14px;
+  }
+  .fechar:hover { border-color: var(--ambar); }
+  .descricao { color: var(--suave); margin: 10px 0 0; max-width: 60ch; }
+  .secao { margin-top: 22px; }
+  .secao h3 {
+    margin: 0 0 8px; font-family: var(--f-display); font-weight: 400; font-size: 12px; letter-spacing: .08em;
+    color: var(--suave); text-transform: uppercase; display: flex; align-items: center; gap: 8px;
+  }
+  .secao h3::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--borda) 0 4px, transparent 4px 8px); }
+  .itens { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .item { background: var(--painel-3); border: 2px solid #2a3150; padding: 8px 10px; display: grid; gap: 3px; min-width: 0; }
+  .item.com-sprite { grid-template-columns: 28px 1fr; column-gap: 10px; align-items: start; }
+  .item.com-sprite canvas { width: 24px; height: 33px; image-rendering: pixelated; grid-row: span 6; }
+  .item .linha1 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+  .item .nome { font-weight: 700; }
+  .item .meta { color: var(--fraco); font-size: 14px; }
+  .item .texto { color: var(--suave); font-size: 15px; overflow-wrap: anywhere; }
+  .item .texto q { color: var(--texto); }
+  .mono { font-family: var(--f-mono); font-size: 18px; line-height: 1.1; color: #c9d1f0; overflow-wrap: anywhere; }
+  .estado { font-family: var(--f-display); font-size: 10px; padding: 2px 5px 1px; letter-spacing: .04em; color: #0b0d14; }
+  .estado.trabalhando { background: var(--trab); }
+  .estado.esperando { background: var(--espera); }
+  .estado.erro { background: var(--erro); }
+  .estado.terminou { background: var(--noar); }
+  .estado.parado { background: var(--desl); color: #e4e7f5; }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0; }
+  .kv dt { color: var(--fraco); }
+  .kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .copiar { cursor: pointer; background: var(--painel-2); border: 2px solid var(--borda); font-size: 13px; padding: 2px 8px; margin-left: 6px; }
+  .dica { color: var(--suave); font-size: 14px; background: var(--painel-3); border: 2px dashed var(--borda); padding: 8px 10px; }
+  .dica code { font-family: var(--f-mono); font-size: 17px; color: var(--texto); }
+  .nada { color: var(--fraco); font-size: 15px; margin: 0; }
+
+  /* ── legenda ── */
+  .legenda { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
+  .legenda div { display: flex; gap: 10px; align-items: center; color: var(--suave); font-size: 15px; }
+  .legenda canvas[height="12"] { height: 36px; }
+  .legenda canvas { width: 30px; height: 30px; image-rendering: pixelated; flex: none; background: var(--painel-3); border: 2px solid #2a3150; }
+  .como { background: var(--painel); border: 2px solid var(--borda); padding: 14px 16px; }
+  .como h2 { margin: 0 0 8px; font-family: var(--f-display); font-size: 14px; letter-spacing: .05em; }
+  .como ol { margin: 0; padding-left: 22px; display: grid; gap: 4px; max-width: 75ch; color: var(--suave); }
+  .como code { font-family: var(--f-mono); font-size: 18px; color: var(--texto); }
+  .rodape-coleta { color: var(--fraco); font-size: 13px; }
+</style>
+
+<header class="hud">
+  <div class="marca">
+    <canvas id="logo" width="10" height="10" aria-hidden="true"></canvas>
+    <div>
+      <h1 id="titulo">Escritório do KzziN</h1>
+      <p class="fonte demo" id="fonte"><span class="luz"></span><span id="fonte-texto">Conectando…</span></p>
+    </div>
+  </div>
+  <dl class="placar" aria-label="Resumo">
+    <div class="p-noar"><dt>Apps no ar</dt><dd id="n-noar">–</dd></div>
+    <div class="p-trab"><dt>Agentes trabalhando</dt><dd id="n-trab">–</dd></div>
+    <div class="p-chama" id="p-chama"><dt>Precisam de você</dt><dd id="n-chama">–</dd></div>
+    <div><dt>CMDs abertos</dt><dd id="n-cmd">–</dd></div>
+  </dl>
+  <div class="relogio" id="relogio" aria-label="Hora">--:--</div>
+</header>
+
+<div class="conteudo">
+  <div class="faixa" id="faixa-demo" hidden>
+    <strong>DEMONSTRAÇÃO</strong>
+    <p>Estes projetos vieram das nossas conversas e os estados são de exemplo. No PC do trabalho, dê dois cliques em <code>iniciar-escritorio.bat</code> (pasta <code>escritorio</code>) e o escritório passa a mostrar o que está rodando de verdade.</p>
+  </div>
+  <div class="faixa aviso" id="faixa-offline" hidden>
+    <strong>SEM CONEXÃO</strong>
+    <p>O servidor do Escritório parou de responder. Veja se a janela do <code>iniciar-escritorio.bat</code> ainda está aberta. Os dados abaixo são da última leitura.</p>
+  </div>
+  <div id="avisos"></div>
+
+  <section class="chamados" id="chamados" aria-live="polite" aria-label="Precisam de você"></section>
+
+  <div class="barra">
+    <h2 id="contagem-salas">SALAS</h2>
+    <div class="filtro" role="group" aria-label="Quais salas mostrar">
+      <button type="button" id="f-todas" aria-pressed="true">Todas as salas</button>
+      <button type="button" id="f-movimento" aria-pressed="false">Só com movimento</button>
+    </div>
+  </div>
+
+  <main class="predio" id="predio" aria-label="Salas dos projetos"></main>
+
+  <section class="legenda" aria-label="Legenda">
+    <div><canvas id="lg-luz" width="10" height="10"></canvas><span>Luz acesa: tem alguém trabalhando ou um CMD aberto na sala.</span></div>
+    <div><canvas id="lg-rack" width="10" height="10"></canvas><span>Servidor com luz verde: o app está no ar. Vermelho: com erro.</span></div>
+    <div><canvas id="lg-robo" width="10" height="12"></canvas><span>Robô: agente de IA. O nome dele está no crachá da mesa.</span></div>
+    <div><canvas id="lg-voce" width="10" height="12"></canvas><span>Você: o projeto está aberto no seu editor.</span></div>
+    <div><canvas id="lg-cmd" width="10" height="10"></canvas><span>Telão da parede: um quadrinho para cada CMD aberto.</span></div>
+    <div><canvas id="lg-balao" width="10" height="10"></canvas><span>Balão: … trabalhando, ? esperando você, ! erro, ✓ terminou.</span></div>
+  </section>
+
+  <section class="como" id="como">
+    <h2>Como ligar no PC do trabalho</h2>
+    <ol>
+      <li>Copie a pasta <code>escritorio</code> deste repositório para o PC (precisa do Node.js instalado).</li>
+      <li>Dê dois cliques em <code>iniciar-escritorio.bat</code>. O navegador abre em <code>http://localhost:7777</code>.</li>
+      <li>Os projetos em que você já usou o Claude Code ou o Codex aparecem sozinhos. Para testar se o app responde, coloque a <code>url</code> ou a <code>porta</code> de cada um no <code>projetos.json</code>.</li>
+    </ol>
+    <p class="rodape-coleta" id="rodape-coleta"></p>
+  </section>
+</div>
+
+<div class="fundo-painel" id="fundo-painel" hidden></div>
+<aside class="painel" id="painel" role="dialog" aria-modal="false" aria-labelledby="painel-titulo" hidden></aside>
+
+<script>
+(() => {
+  'use strict';
+
+  // ─────────────── utilidades ───────────────
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const W = 128, H = 80;
+  const reduzido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+  const lerGuardado = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+
+  function hexRgb(h) {
+    h = String(h || '#888888').replace('#', '');
+    if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+    const n = parseInt(h, 16) || 0;
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function mix(a, b, t) {
+    const A = hexRgb(a), B = hexRgb(b);
+    return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join('');
+  }
+  function hashStr(s) { let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function ruido(a, b, c) { let h = Math.imul(a ^ 0x9e3779b9, 2654435761) ^ Math.imul(b + 0x85ebca6b, 2246822519) ^ Math.imul(c + 0xc2b2ae35, 3266489917); h ^= h >>> 15; h = Math.imul(h, 2246822507); h ^= h >>> 13; return (h >>> 0) / 4294967296; }
+  const CORES_AUTO = ['#6cc6ff', '#ffb86b', '#b58cff', '#7bd389', '#ff8fa3', '#f2d45c', '#5fd1c9', '#c3a1ff'];
+  const corDa = (s) => s.cor || CORES_AUTO[hashStr(s.id) % CORES_AUTO.length];
+
+  let difRelogio = 0; // servidor - navegador
+  function ha(ms) {
+    if (!ms) return '';
+    const s = Math.max(0, Math.round((Date.now() + difRelogio - ms) / 1000));
+    if (s < 5) return 'agora';
+    if (s < 60) return `há ${s} s`;
+    const m = Math.round(s / 60);
+    if (m < 60) return `há ${m} min`;
+    const h = Math.round(m / 60);
+    if (h < 48) return `há ${h} h`;
+    return `há ${Math.round(h / 24)} dias`;
+  }
+  function duracao(ms) {
+    if (!ms) return '';
+    return ha(ms).replace('há ', '');
+  }
+
+  const ESTADO_NOME = { trabalhando: 'TRABALHANDO', esperando: 'ESPERANDO VOCÊ', erro: 'ERRO', terminou: 'TERMINOU', parado: 'PARADO' };
+  const ESTADO_COR = { trabalhando: '#6cc6ff', esperando: '#ffb547', erro: '#ff5d6c', terminou: '#57d68d', parado: '#7c84a3' };
+  const FERRAMENTA_COR = { 'Claude Code': '#d97757', 'Claude Desktop': '#e39a66', Codex: '#56c2a0', Gemini: '#6f9dff', 'Cursor Agent': '#c9c9d6', Aider: '#9ad06a', OpenCode: '#f2c14e' };
+
+  // ─────────────── pixel art ───────────────
+  const ICONES = {
+    totem: ['.XXXXXX.', '.X....X.', '.X.XX.X.', '.X....X.', '.XXXXXX.', '...XX...', '...XX...', '.XXXXXX.'],
+    impressora: ['..XXXX..', '..X..X..', 'XXXXXXXX', 'X......X', 'X.XX.X.X', 'XXXXXXXX', '.X....X.', '.XXXXXX.'],
+    notebook: ['........', '.XXXXXX.', '.X....X.', '.X....X.', '.XXXXXX.', 'XXXXXXXX', 'XXXXXXXX', '........'],
+    raspberry: ['..X..X..', '...XX...', '.XXXXXX.', 'XX.XX.XX', 'XXXXXXXX', '.XX.XXX.', '..XXXX..', '...XX...'],
+    camera: ['........', 'XXXXX...', 'X...XX.X', 'X...XXXX', 'X...XXXX', 'X...XX.X', 'XXXXX...', '........'],
+    imagem: ['XXXXXXXX', 'X......X', 'X.XX...X', 'X.XX..XX', 'X....XXX', 'X.XXXXXX', 'XXXXXXXX', '........'],
+    nuvem: ['........', '...XX...', '..XXXX..', '.XXXXXXX', 'XXXXXXXX', 'XXXXXXXX', '.XXXXXX.', '........'],
+    notch: ['X......X', 'XXXXXXXX', 'X.XXXX.X', 'X......X', 'X......X', 'X......X', 'XXXXXXXX', '........'],
+    corpo: ['...XX...', '...XX...', '.XXXXXX.', 'X.XXXX.X', '..XXXX..', '..X..X..', '..X..X..', '.XX..XX.'],
+    pasta: ['........', 'XXX.....', 'XXXXXXXX', 'X......X', 'X......X', 'X......X', 'XXXXXXXX', '........'],
+    recepcao: ['...XX...', '..XXXX..', '.XXXXXX.', '.XXXXXX.', '.XXXXXX.', 'XXXXXXXX', '........', 'XXXXXXXX'],
+    codigo: ['........', '..X..X..', '.X...X..', 'X...X..X', '.X..X.X.', '..XX..X.', '........', '........'],
+  };
+  const ROBO = ['...a....', '...s....', '.MMMMMM.', 'MFFFFFFM', 'MFEFFEFM', 'MFFFFFFM', '.MMMMMM.', '...nn...', '.BBBBBB.', 'BBBBBBBB', 'BBBBBBBB'];
+  const PESSOA = ['........', '..HHHH..', '.HHHHHH.', '.HSSSSH.', '.SESSES.', '.SSSSSS.', '..SSSS..', '...SS...', '.TTTTTT.', 'TTTTTTTT', 'TTTTTTTT'];
+  const GLIFOS = {
+    '?': ['XXX', '..X', '.X.', '...', '.X.'],
+    '!': ['.X.', '.X.', '.X.', '...', '.X.'],
+    ok: ['.....', '....X', '...X.', 'X.X..', '.X...'],
+    z: ['XXX', '..X', '.X.', 'X..', 'XXX'],
+  };
+
+  function desenharMapa(g, mapa, x, y, cores) {
+    for (let j = 0; j < mapa.length; j++) {
+      const linha = mapa[j];
+      for (let i = 0; i < linha.length; i++) {
+        const c = cores[linha[i]];
+        if (c) { g.fillStyle = c; g.fillRect(x + i, y + j, 1, 1); }
+      }
+    }
+  }
+
+  function coresRobo(ferramenta, estado, piscar) {
+    const corpo = FERRAMENTA_COR[ferramenta] || '#c0c6d8';
+    const olho = piscar ? '#141722' : estado === 'erro' ? '#ff8a95' : estado === 'parado' ? '#8a93b5' : '#aef6ff';
+    return {
+      a: ESTADO_COR[estado] || '#7c84a3', s: '#7b8199', M: mix(corpo, '#ffffff', 0.18), F: '#141722',
+      E: olho, n: '#5a6078', B: mix(corpo, '#000000', 0.12),
+    };
+  }
+  const CORES_VOCE = { H: '#2b1d14', S: '#e2ae80', E: '#1b1b24', T: '#4f7cff' };
+
+  function spriteCanvas(tipo, ferramenta, estado) {
+    const cv = document.createElement('canvas');
+    cv.width = 8; cv.height = 11;
+    const g = cv.getContext('2d');
+    if (tipo === 'voce') desenharMapa(g, PESSOA, 0, 0, CORES_VOCE);
+    else desenharMapa(g, ROBO, 0, 0, coresRobo(ferramenta, estado, false));
+    return cv;
+  }
+  function iconeCanvas(nome, cor, tamanho = 8) {
+    const cv = document.createElement('canvas');
+    cv.width = tamanho; cv.height = tamanho;
+    const g = cv.getContext('2d');
+    g.fillStyle = mix(cor, '#10131d', 0.15); g.fillRect(0, 0, tamanho, tamanho);
+    desenharMapa(g, ICONES[nome] || ICONES.pasta, (tamanho - 8) / 2, (tamanho - 8) / 2, { X: '#10131d' });
+    return cv;
+  }
+
+  function periodo() {
+    const h = new Date().getHours();
+    return h >= 6 && h < 17 ? 'dia' : h >= 17 && h < 19 ? 'tarde' : 'noite';
+  }
+
+  const MESAS = [[10, 34], [40, 34], [70, 34], [10, 62], [40, 62], [70, 62]];
+  const cacheFundo = new Map();
+
+  function fundo(sala, aceso) {
+    const cor = corDa(sala);
+    const chave = [cor, sala.icone, sala.tipo, aceso, periodo()].join('|');
+    const c = cacheFundo.get(sala.id);
+    if (c && c.chave === chave) return c.cv;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const g = cv.getContext('2d');
+    const r = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
+
+    // chão
+    if (sala.tipo === 'recepcao') {
+      for (let y = 16; y < 77; y += 4) for (let x = 2; x < 126; x += 4) r(x, y, 4, 4, ((x + y) / 4) % 2 ? '#d8d0bf' : '#c6bdab');
+    } else {
+      for (let y = 16, fila = 0; y < 77; y += 4, fila++) {
+        r(2, y, 124, 4, fila % 2 ? '#b4855a' : '#bc8e61');
+        r(2, y + 3, 124, 1, '#9d7049');
+        for (let x = 2 + ((fila * 11) % 22); x < 126; x += 22) r(x, y, 1, 3, '#9d7049');
+      }
+    }
+    // tapete com a cor do projeto
+    const tapete = mix(cor, '#3b2a20', 0.5);
+    r(6, 27, 94, 48, mix(tapete, '#000000', 0.15));
+    r(7, 28, 92, 46, tapete);
+    for (let x = 9; x < 97; x += 4) { r(x, 29, 2, 1, mix(cor, '#ffffff', 0.25)); r(x, 72, 2, 1, mix(cor, '#ffffff', 0.25)); }
+
+    // parede do fundo
+    const parede = mix(cor, '#efe6d6', 0.74);
+    r(0, 0, W, 3, '#161a28');
+    r(2, 3, 124, 13, parede);
+    r(2, 10, 124, 1, mix(parede, '#000000', 0.07));
+    r(2, 14, 124, 2, mix(parede, '#3b2a20', 0.45));
+
+    // janela: céu conforme a hora de verdade
+    const p = periodo();
+    const ceu = p === 'dia' ? '#8fcaff' : p === 'tarde' ? '#f2996b' : '#1b2447';
+    r(5, 4, 20, 9, '#f3ecdf');
+    r(6, 5, 18, 7, ceu);
+    if (p === 'tarde') r(6, 9, 18, 3, '#c96b7c');
+    if (p === 'dia') { r(19, 6, 3, 2, '#ffe27a'); r(8, 7, 4, 1, '#ffffff'); r(9, 6, 2, 1, '#ffffff'); }
+    if (p === 'noite') { r(19, 6, 2, 2, '#f4f1c9'); r(20, 6, 1, 1, ceu); r(8, 6, 1, 1, '#ffffff'); r(11, 10, 1, 1, '#cfd8ff'); r(16, 9, 1, 1, '#ffffff'); r(22, 10, 1, 1, '#cfd8ff'); }
+    r(14, 5, 1, 7, '#f3ecdf');
+    r(6, 8, 18, 1, '#f3ecdf');
+
+    // telão (os CMDs aparecem nele)
+    r(29, 3, 26, 11, '#0b0d15');
+    r(30, 4, 24, 9, '#10131d');
+    r(41, 14, 2, 1, '#2a2f40');
+
+    // quadro com o ícone do projeto
+    r(59, 4, 12, 10, '#4a3a2c');
+    r(60, 5, 10, 8, mix(cor, '#ffffff', 0.12));
+    desenharMapa(g, ICONES[sala.icone] || ICONES.pasta, 61, 5, { X: mix(cor, '#10131d', 0.8) });
+
+    // relógio de parede
+    r(76, 5, 5, 5, '#f3ecdf'); r(77, 6, 3, 3, '#ffffff'); r(78, 6, 1, 2, '#1b1d2a'); r(78, 7, 2, 1, '#1b1d2a');
+
+    // rack do servidor (o app)
+    r(103, 32, 17, 2, 'rgba(0,0,0,0.25)');
+    r(103, 4, 17, 3, '#3a4156');
+    r(103, 7, 17, 25, '#1e2230');
+    for (let i = 0; i < 4; i++) {
+      const y = 8 + i * 6;
+      r(104, y, 15, 5, '#2a3042');
+      r(105, y + 2, 6, 1, '#161925');
+      r(113, y + 2, 1, 1, '#141722'); r(115, y + 2, 1, 1, '#141722'); r(117, y + 2, 1, 1, '#141722');
+    }
+    r(104, 32, 2, 1, '#0c0d12'); r(117, 32, 2, 1, '#0c0d12');
+
+    // planta
+    r(4, 70, 6, 5, '#b0643a'); r(3, 69, 8, 2, '#c7774a');
+    r(5, 62, 4, 7, '#3f9e5a'); r(3, 64, 3, 4, '#2f8049'); r(8, 63, 3, 5, '#2f8049'); r(6, 60, 2, 3, '#58b86f');
+
+    // cantinho do café
+    r(106, 64, 18, 10, '#6d4a33'); r(106, 63, 18, 2, '#8a6043');
+    r(109, 56, 7, 8, '#2b2f3c'); r(110, 57, 5, 2, '#4a5068'); r(111, 60, 3, 3, '#12141c');
+    r(118, 61, 2, 2, '#f2f2f2');
+    r(121, 53, 4, 11, '#dbe8f5'); r(121, 49, 4, 4, '#8fd0ff'); r(122, 57, 2, 1, '#6aa7d8');
+
+    // mesas
+    for (const [x, y] of MESAS) {
+      r(x + 10, y - 10, 12, 9, '#2c3246'); r(x + 11, y - 9, 10, 7, '#394060');
+      r(x, y, 26, 5, '#a8744a'); r(x, y, 26, 1, '#c28b5c');
+      r(x, y + 5, 26, 4, '#7c5134'); r(x + 1, y + 9, 2, 1, '#4a3020'); r(x + 23, y + 9, 2, 1, '#4a3020');
+      r(x + 2, y - 6, 9, 7, '#1c1f2b'); r(x + 3, y - 5, 7, 4, '#12141c'); r(x + 5, y + 1, 3, 1, '#3a3f52');
+      r(x + 12, y + 1, 9, 2, '#d5d9e3'); r(x + 12, y + 2, 9, 1, '#aeb3c2');
+    }
+
+    // paredes laterais e de baixo, com a porta fechada
+    r(0, 0, 2, H, '#161a28'); r(126, 0, 2, H, '#161a28');
+    r(0, 77, W, 3, '#161a28');
+    r(56, 77, 16, 3, '#7a4d2c'); r(57, 78, 14, 1, '#8e5c36'); r(69, 78, 1, 1, '#e8c35a');
+
+    if (aceso) {
+      const luz = g.createRadialGradient(56, 30, 4, 56, 40, 80);
+      luz.addColorStop(0, 'rgba(255,214,150,0.16)');
+      luz.addColorStop(1, 'rgba(255,214,150,0)');
+      g.fillStyle = luz; g.fillRect(0, 0, W, H);
+    } else {
+      g.fillStyle = 'rgba(7,9,22,0.7)'; g.fillRect(0, 0, W, H);
+      g.fillStyle = ceu === '#8fcaff' ? 'rgba(143,202,255,0.35)' : 'rgba(0,0,0,0)';
+      g.fillRect(6, 5, 18, 7);
+    }
+    cacheFundo.set(sala.id, { chave, cv });
+    return cv;
+  }
+
+  function balao(g, cx, topo, tipo, quadro) {
+    let y = topo - 9;
+    if (tipo === '?' && quadro % 6 < 3) y -= 1;
+    if (tipo === 'z') y -= (quadro >> 2) % 2;
+    if (tipo === '!' && quadro % 4 >= 2) return;
+    const x = cx - 3;
+    const fundoB = '#f7f8fc';
+    g.fillStyle = fundoB;
+    g.fillRect(x + 1, y, 5, 1); g.fillRect(x, y + 1, 7, 5); g.fillRect(x + 1, y + 6, 5, 1); g.fillRect(x + 2, y + 7, 2, 1);
+    const cor = tipo === '?' ? '#d98a00' : tipo === '!' ? '#e2293b' : tipo === 'ok' ? '#1f9d55' : tipo === 'z' ? '#6f7798' : '#2d7fd3';
+    if (tipo === '...') {
+      const n = 1 + ((quadro >> 1) % 3);
+      g.fillStyle = cor;
+      for (let i = 0; i < n; i++) g.fillRect(x + 1 + i * 2, y + 3, 1, 1);
+      return;
+    }
+    const gl = GLIFOS[tipo];
+    const gx = x + Math.floor((7 - gl[0].length) / 2);
+    desenharMapa(g, gl, gx, y + 1, { X: cor });
+  }
+
+  function telaMonitor(g, x, y, modo, quadro, semente) {
+    const sx = x + 3, sy = y - 5;
+    const r = (a, b, w, h, c) => { g.fillStyle = c; g.fillRect(a, b, w, h); };
+    if (modo === 'trabalhando' || modo === 'voce') {
+      r(sx, sy, 7, 4, modo === 'voce' ? '#1a2442' : '#0e1a2b');
+      for (let l = 0; l < 4; l++) {
+        const w = 2 + Math.floor(ruido(semente, l, modo === 'voce' ? quadro >> 3 : quadro >> 1) * 5);
+        r(sx, sy + l, w, 1, l % 2 ? '#6cc6ff' : modo === 'voce' ? '#c3a1ff' : '#9ff3a8');
+      }
+    } else if (modo === 'esperando') {
+      r(sx, sy, 7, 4, '#3a2a10');
+      if (quadro % 4 < 2) r(sx + 3, sy + 1, 1, 2, '#ffb547');
+    } else if (modo === 'erro') {
+      r(sx, sy, 7, 4, '#3a1016');
+      r(sx + 1, sy + 1, 5, 1, '#ff5d6c'); if (quadro % 4 < 2) r(sx + 1, sy + 2, 3, 1, '#ff5d6c');
+    } else if (modo === 'terminou') {
+      r(sx, sy, 7, 4, '#10241b'); r(sx + 1, sy + 1, 4, 1, '#57d68d'); r(sx + 1, sy + 2, 2, 1, '#57d68d');
+    } else if (modo === 'parado') {
+      r(sx, sy, 7, 4, '#161a26'); r(sx + 1 + ((quadro >> 3) % 5), sy + 1 + ((quadro >> 4) % 2), 1, 1, '#39405a');
+    }
+    if (modo && modo !== 'parado') r(x + 2, y, 9, 1, modo === 'erro' ? '#c98a8f' : '#d8b58f');
+  }
+
+  function desenharTelao(g, terminais, quadro) {
+    const n = terminais.length;
+    const r = (a, b, w, h, c) => { g.fillStyle = c; g.fillRect(a, b, w, h); };
+    if (!n) { r(31, 5, 3, 1, '#1b1f2e'); r(32, 6, 2, 1, '#1b1f2e'); return; }
+    r(30, 4, 24, 9, '#0e1830');
+    const pos = [[31, 5], [36, 6], [41, 7]];
+    for (let i = 0; i < Math.min(3, n); i++) {
+      const t = terminais[i];
+      const [x, y] = pos[i];
+      const nome = (t.programa || '').toLowerCase();
+      const ps = nome.includes('powershell');
+      const barra = ps ? '#3a6fd8' : nome.includes('bash') || nome.includes('wsl') ? '#8b5fd0' : '#c7ccd9';
+      r(x, y, 11, 6, '#05060a');
+      r(x, y, 11, 1, barra);
+      r(x + 10, y, 1, 1, '#ff5d6c');
+      r(x, y + 1, 11, 5, ps ? '#012456' : '#0c0c0c');
+      const semente = hashStr(String(t.pid || i));
+      for (let l = 0; l < 3; l++) {
+        const w = 2 + Math.floor(ruido(semente, l, t.agente ? quadro >> 1 : quadro >> 4) * 7);
+        r(x + 1, y + 2 + l, w, 1, t.agente ? '#e8a07e' : l === 2 ? '#9ff3a8' : '#b9bdc9');
+      }
+      if (quadro % 4 < 2) r(x + 8, y + 4, 1, 1, '#ffffff');
+    }
+    if (n > 3) { r(52, 10, 1, 3, '#ffffff'); r(51, 11, 3, 1, '#ffffff'); }
+  }
+
+  function desenharRack(g, estado, quadro, semente) {
+    const r = (a, b, w, h, c) => { g.fillStyle = c; g.fillRect(a, b, w, h); };
+    if (estado === 'no-ar' || estado === 'erro') {
+      const halo = g.createRadialGradient(111, 18, 1, 111, 18, 16);
+      const cor = estado === 'no-ar' ? '87,214,141' : '255,93,108';
+      halo.addColorStop(0, `rgba(${cor},0.28)`); halo.addColorStop(1, `rgba(${cor},0)`);
+      g.fillStyle = halo; g.fillRect(95, 2, 32, 34);
+    }
+    for (let i = 0; i < 4; i++) {
+      const y = 8 + i * 6 + 2;
+      for (let k = 0; k < 3; k++) {
+        const x = 113 + k * 2;
+        let c = '#141722';
+        if (estado === 'no-ar') c = k === 0 ? '#57d68d' : ruido(semente, i * 3 + k, reduzido ? 0 : quadro) > 0.45 ? '#9dffc4' : '#1f5a3a';
+        else if (estado === 'erro') c = k === 0 ? (quadro % 6 < 3 || reduzido ? '#ff5d6c' : '#5a1a22') : k === 1 ? '#ffb547' : '#3a2025';
+        else if (estado === 'desligado') c = i === 0 && k === 0 ? '#6a2a30' : '#141722';
+        r(x, y, 1, 1, c);
+      }
+    }
+    if (estado === 'no-ar') r(105, 10 + ((quadro >> 1) % 4) * 6, 6, 1, '#2f7a50');
+  }
+
+  function desenharPessoa(g, x, y, oc, quadro, semente) {
+    const cx = x + 16;
+    const topo = y - 11;
+    if (oc.tipo === 'voce') {
+      desenharMapa(g, PESSOA, x + 12, topo, CORES_VOCE);
+      const bate = !reduzido && quadro % 8 < 4;
+      g.fillStyle = '#e2ae80';
+      g.fillRect(x + 13, y + (bate ? 0 : 1), 2, 1); g.fillRect(x + 18, y + (bate ? 1 : 0), 2, 1);
+      telaMonitor(g, x, y, 'voce', quadro, semente);
+      return;
+    }
+    const a = oc.agente;
+    const st = a.estado;
+    const piscar = !reduzido && (quadro + semente) % 37 === 0;
+    const trabalhando = st === 'trabalhando';
+    desenharMapa(g, ROBO, x + 12, topo, coresRobo(a.ferramenta, st, piscar));
+    if (trabalhando && !piscar) {
+      // olhos olhando o teclado
+      g.fillStyle = '#141722'; g.fillRect(x + 14, topo + 4, 1, 1); g.fillRect(x + 17, topo + 4, 1, 1);
+      g.fillStyle = '#aef6ff'; g.fillRect(x + 14, topo + 5, 1, 1); g.fillRect(x + 17, topo + 5, 1, 1);
+    }
+    const maos = mix(FERRAMENTA_COR[a.ferramenta] || '#c0c6d8', '#ffffff', 0.25);
+    g.fillStyle = maos;
+    if (trabalhando && !reduzido) {
+      const f = quadro % 4;
+      g.fillRect(x + 13, y + (f < 2 ? 0 : 1), 2, 1);
+      g.fillRect(x + 18, y + (f < 2 ? 1 : 0), 2, 1);
+    } else if (st === 'esperando') {
+      g.fillRect(x + 11, topo + 5, 1, 4); g.fillRect(x + 10, topo + 4, 2, 1); // mão levantada
+      g.fillRect(x + 18, y + 1, 2, 1);
+    } else {
+      g.fillRect(x + 13, y + 1, 2, 1); g.fillRect(x + 18, y + 1, 2, 1);
+    }
+    if (st === 'terminou') {
+      g.fillStyle = '#f2f2f2'; g.fillRect(x + 22, y - 2, 2, 2);
+      g.fillStyle = '#9aa0b5'; g.fillRect(x + 24, y - 1, 1, 1);
+      if (!reduzido && quadro % 6 < 3) { g.fillStyle = 'rgba(255,255,255,0.6)'; g.fillRect(x + 23, y - 4, 1, 1); }
+    }
+    telaMonitor(g, x, y, st, quadro, semente);
+    const tipo = st === 'trabalhando' ? '...' : st === 'esperando' ? '?' : st === 'erro' ? '!' : st === 'terminou' ? 'ok' : 'z';
+    balao(g, cx, topo, tipo, reduzido ? 0 : quadro);
+  }
+
+  // ─────────────── estado das salas ───────────────
+  let dados = null;
+  let modo = 'iniciando'; // vivo | demo | offline
+  const salasDom = new Map();
+  let filtro = lerGuardado('escritorio.filtro') === 'movimento' ? 'movimento' : 'todas';
+  let aberta = null;
+
+  function ocupantes(s) {
+    const lista = [];
+    if (s.voce && s.voce.length) lista.push({ tipo: 'voce' });
+    for (const a of s.agentes || []) if (a.visivel) lista.push({ tipo: 'agente', agente: a });
+    return lista;
+  }
+  function acesa(s) { return ocupantes(s).length > 0 || (s.terminais || []).length > 0; }
+  function chamando(s) {
+    const ags = (s.agentes || []).filter((a) => a.visivel);
+    if (ags.some((a) => a.estado === 'erro') || (s.app && s.app.estado === 'erro')) return 'erro';
+    if (ags.some((a) => a.estado === 'esperando')) return 'esperando';
+    return '';
+  }
+  function pilula(s) {
+    const e = s.app ? s.app.estado : 'sem-app';
+    if (e === 'erro') return ['erro', 'COM ERRO'];
+    if (e === 'no-ar') return ['no-ar', 'NO AR'];
+    if (e === 'desligado') return ['desligado', 'FORA DO AR'];
+    if (acesa(s)) return ['uso', 'EM USO'];
+    return ['vazia', 'VAZIA'];
+  }
+  function temMovimento(s) {
+    return acesa(s) || (s.app && ['no-ar', 'erro'].includes(s.app.estado)) || (s.agentes || []).some((a) => a.visivel);
+  }
+
+  function criarSalaDom(s) {
+    const el = document.createElement('article');
+    el.className = 'sala';
+    el.tabIndex = 0;
+    el.setAttribute('role', 'button');
+    el.innerHTML = `
+      <header class="placa"><canvas width="8" height="8" aria-hidden="true"></canvas><h3></h3><span class="auto"></span><span class="pilula"></span></header>
+      <div class="cena"><canvas width="${W}" height="${H}" aria-hidden="true"></canvas><div class="crachas"></div></div>
+      <footer class="fatos"><span class="app"></span><span class="contas"></span></footer>`;
+    const abrir = () => abrirPainel(s.id);
+    el.addEventListener('click', abrir);
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } });
+    const d = {
+      el, cv: $('.cena canvas', el), g: $('.cena canvas', el).getContext('2d'), icone: $('.placa canvas', el),
+      nome: $('h3', el), auto: $('.auto', el), pil: $('.pilula', el), crachas: $('.crachas', el),
+      app: $('.fatos .app', el), contas: $('.fatos .contas', el), visivel: true, sala: s, sujo: true, chaveIcone: '', chaveCrachas: '',
+    };
+    d.g.imageSmoothingEnabled = false;
+    if ('IntersectionObserver' in window) observador.observe(el);
+    salasDom.set(s.id, d);
+    return d;
+  }
+
+  const observador = 'IntersectionObserver' in window ? new IntersectionObserver((ents) => {
+    for (const e of ents) for (const d of salasDom.values()) if (d.el === e.target) { d.visivel = e.isIntersecting; d.sujo = true; }
+  }, { rootMargin: '120px' }) : null;
+
+  function atualizarSalaDom(d, s) {
+    d.sala = s;
+    d.sujo = true;
+    const cor = corDa(s);
+    const chaveIcone = s.icone + cor;
+    if (d.chaveIcone !== chaveIcone) {
+      const g = d.icone.getContext('2d');
+      g.clearRect(0, 0, 8, 8);
+      g.fillStyle = cor; g.fillRect(0, 0, 8, 8);
+      desenharMapa(g, ICONES[s.icone] || ICONES.pasta, 0, 0, { X: '#10131d' });
+      d.chaveIcone = chaveIcone;
+    }
+    d.nome.textContent = s.nome;
+    d.auto.textContent = s.tipo === 'auto' ? 'nova' : '';
+    d.auto.title = s.tipo === 'auto' ? s.descricao : '';
+    const [pc, pt] = pilula(s);
+    d.pil.className = 'pilula ' + pc;
+    d.pil.textContent = pt;
+    const ch = chamando(s);
+    d.el.classList.toggle('chama', !!ch);
+    d.el.classList.toggle('erro', ch === 'erro');
+    d.app.textContent = s.app ? (s.app.estado === 'sem-app' ? (acesa(s) ? 'Sem app configurado' : 'Ninguém por aqui') : 'App: ' + s.app.resumo) : '';
+    d.app.title = d.app.textContent;
+    const ags = (s.agentes || []).filter((a) => a.visivel).length;
+    const cmds = (s.terminais || []).length;
+    d.contas.innerHTML = `<span><b>${cmds}</b> CMD${cmds === 1 ? '' : 's'}</span><span><b>${ags}</b> agente${ags === 1 ? '' : 's'}</span>`;
+
+    const oc = ocupantes(s);
+    const chaveCrachas = JSON.stringify(oc.map((o) => o.tipo === 'voce' ? 'v' : o.agente.persona + o.agente.estado + o.agente.titulo));
+    if (chaveCrachas !== d.chaveCrachas) {
+      d.chaveCrachas = chaveCrachas;
+      d.crachas.innerHTML = '';
+      oc.slice(0, MESAS.length).forEach((o, i) => {
+        const [x, y] = MESAS[i];
+        const t = document.createElement('span');
+        t.className = 'cracha ' + (o.tipo === 'voce' ? 'voce' : o.agente.estado);
+        t.style.left = ((x + 16) / W * 100) + '%';
+        t.style.top = ((y + 10) / H * 100) + '%';
+        if (o.tipo === 'voce') { t.textContent = 'Você'; }
+        else { t.textContent = o.agente.persona; }
+        d.crachas.appendChild(t);
+      });
+      if (oc.length > MESAS.length) {
+        const m = document.createElement('span');
+        m.className = 'cracha mais';
+        m.textContent = `+${oc.length - MESAS.length}`;
+        d.crachas.appendChild(m);
+      }
+    }
+    const partes = [s.nome, pt.toLowerCase()];
+    if (s.app && s.app.estado !== 'sem-app') partes.push('app: ' + s.app.resumo);
+    partes.push(`${cmds} CMDs abertos`);
+    const lista = oc.map((o) => o.tipo === 'voce' ? 'você no editor' : `${o.agente.persona} (${o.agente.ferramenta}) ${(ESTADO_NOME[o.agente.estado] || '').toLowerCase()}`);
+    if (lista.length) partes.push(lista.join(', '));
+    d.el.setAttribute('aria-label', partes.join('. '));
+  }
+
+  function desenharSala(d, quadro) {
+    const s = d.sala;
+    const g = d.g;
+    const aceso = acesa(s);
+    g.drawImage(fundo(s, aceso), 0, 0);
+    const semente = hashStr(s.id);
+    desenharTelao(g, s.terminais || [], quadro);
+    desenharRack(g, s.app ? s.app.estado : 'sem-app', quadro, semente);
+    const oc = ocupantes(s);
+    oc.slice(0, MESAS.length).forEach((o, i) => {
+      const [x, y] = MESAS[i];
+      desenharPessoa(g, x, y, o, quadro, semente + i * 7);
+    });
+    // lâmpada em cima da porta
+    const ch = chamando(s);
+    const lamp = ch === 'erro' ? '#ff5d6c' : ch ? '#ffb547' : s.app && s.app.estado === 'no-ar' ? '#57d68d' : aceso ? '#ffcf6e' : '#3a3f55';
+    if (!(ch && !reduzido && quadro % 6 >= 3)) { g.fillStyle = lamp; g.fillRect(62, 77, 4, 1); }
+  }
+
+  // ─────────────── aplicar os dados ───────────────
+  function aplicar(d) {
+    dados = d;
+    if (d.agora) difRelogio = d.agora - Date.now();
+    const titulo = d.titulo || 'Escritório';
+    $('#titulo').textContent = titulo;
+
+    const salas = d.salas || [];
+    const vistos = new Set();
+    const predio = $('#predio');
+    let visiveis = 0;
+    salas.forEach((s, i) => {
+      vistos.add(s.id);
+      const dom = salasDom.get(s.id) || criarSalaDom(s);
+      atualizarSalaDom(dom, s);
+      const mostrar = filtro === 'todas' || temMovimento(s);
+      dom.el.hidden = !mostrar;
+      if (mostrar) visiveis++;
+      // mantém a ordem do servidor, sem mexer no que já está no lugar (mexer tira o foco)
+      const ref = predio.children[i];
+      if (ref !== dom.el) predio.insertBefore(dom.el, ref || null);
+    });
+    for (const [id, dom] of salasDom) if (!vistos.has(id)) { dom.el.remove(); salasDom.delete(id); if (observador) observador.unobserve(dom.el); }
+    let vazio = $('.vazio-filtro', predio);
+    if (!visiveis) {
+      if (!vazio) { vazio = document.createElement('p'); vazio.className = 'vazio-filtro'; predio.appendChild(vazio); }
+      vazio.textContent = 'Nenhuma sala com movimento agora. Todo mundo foi tomar café.';
+    } else if (vazio) vazio.remove();
+    $('#contagem-salas').textContent = `${salas.length} SALAS · ${salas.filter(acesa).length} COM A LUZ ACESA`;
+
+    // placar
+    const comApp = salas.filter((s) => s.app && s.app.estado !== 'sem-app');
+    const noAr = comApp.filter((s) => s.app.estado === 'no-ar').length;
+    $('#n-noar').innerHTML = `${noAr}<small>/ ${comApp.length}</small>`;
+    const todos = salas.flatMap((s) => (s.agentes || []).filter((a) => a.visivel).map((a) => ({ a, s })));
+    $('#n-trab').textContent = todos.filter((x) => x.a.estado === 'trabalhando').length;
+    const chamados = [];
+    for (const { a, s } of todos) {
+      if (a.estado === 'esperando') chamados.push({ tipo: 'espera', s, rotulo: 'ESPERANDO', texto: `${a.persona} está esperando você`, sub: `${s.nome} · ${ha(a.ultimaAtividade)}` });
+      if (a.estado === 'erro') chamados.push({ tipo: 'erro', s, rotulo: 'ERRO', texto: `${a.persona} parou com erro`, sub: `${s.nome} · ${(a.resposta || ha(a.ultimaAtividade)).slice(0, 70)}` });
+    }
+    for (const s of salas) if (s.app && s.app.estado === 'erro') chamados.push({ tipo: 'erro', s, rotulo: 'APP', texto: `${s.nome} com problema`, sub: s.app.resumo });
+    $('#n-chama').textContent = chamados.length;
+    $('#p-chama').classList.toggle('tem', chamados.length > 0);
+    $('#n-cmd').textContent = salas.reduce((n, s) => n + (s.terminais || []).length, 0);
+    const box = $('#chamados');
+    box.innerHTML = '';
+    chamados.slice(0, 8).forEach((c) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chamado' + (c.tipo === 'erro' ? ' erro' : '');
+      b.innerHTML = `<b>${esc(c.rotulo)}</b>${esc(c.texto)} <span>${esc(c.sub)}</span>`;
+      b.addEventListener('click', () => abrirPainel(c.s.id));
+      box.appendChild(b);
+    });
+    document.title = (chamados.length ? `(${chamados.length}) ` : '') + titulo;
+
+    // avisos do servidor
+    const av = $('#avisos');
+    av.innerHTML = (d.avisos || []).map((t) => `<div class="faixa aviso"><strong>AVISO</strong><p>${esc(t)}</p></div>`).join('');
+
+    // fonte
+    const fonte = $('#fonte');
+    fonte.classList.toggle('demo', modo === 'demo');
+    fonte.classList.toggle('offline', modo === 'offline');
+    $('#faixa-demo').hidden = modo !== 'demo';
+    $('#faixa-offline').hidden = modo !== 'offline';
+    $('#como').hidden = modo === 'vivo';
+    atualizarFonte();
+    const c = d.coleta || {};
+    $('#rodape-coleta').textContent = modo === 'vivo' ? `Coleta: ${c.modo || '?'} · ${c.ms || 0} ms · janelas ${c.temJanelas ? 'sim' : 'não'} · pasta dos CMDs ${c.temPastas ? 'sim' : 'não'}` : '';
+
+    if (aberta) renderPainel();
+  }
+
+  function atualizarFonte() {
+    if (!dados) return;
+    const t = $('#fonte-texto');
+    if (modo === 'demo') t.textContent = 'Demonstração com os projetos das nossas conversas';
+    else if (modo === 'offline') t.textContent = `${dados.maquina || 'PC'} · sem conexão · última leitura ${ha(dados.agora)}`;
+    else t.textContent = `${dados.maquina || 'PC'} · ao vivo · atualizado ${ha(dados.agora)}`;
+  }
+
+  // ─────────────── painel de detalhes ───────────────
+  function abrirPainel(id) {
+    aberta = id;
+    renderPainel(true);
+    $('#painel').hidden = false;
+    $('#fundo-painel').hidden = false;
+    $('#painel .fechar')?.focus();
+  }
+  function fecharPainel() {
+    const id = aberta;
+    aberta = null;
+    $('#painel').hidden = true;
+    $('#fundo-painel').hidden = true;
+    const d = salasDom.get(id);
+    if (d) d.el.focus();
+  }
+  $('#fundo-painel').addEventListener('click', fecharPainel);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && aberta) fecharPainel(); });
+
+  let ultimoPainel = '';
+  function renderPainel(forcar) {
+    const s = dados && (dados.salas || []).find((x) => x.id === aberta);
+    const p = $('#painel');
+    if (!s) { if (aberta) fecharPainel(); return; }
+    const [pc, pt] = pilula(s);
+    const app = s.app || {};
+    const html = [];
+    html.push(`<div class="painel-topo"><canvas data-icone width="8" height="8" aria-hidden="true"></canvas><div><h2 id="painel-titulo">${esc(s.nome)}</h2><span class="pilula ${pc}">${pt}</span></div><button type="button" class="fechar" aria-label="Fechar">X</button></div>`);
+    if (s.descricao) html.push(`<p class="descricao">${esc(s.descricao)}</p>`);
+
+    // app
+    html.push('<section class="secao"><h3>Aplicação</h3>');
+    if (app.estado === 'sem-app') {
+      html.push('<p class="nada">Nenhum app rodando nesta sala.</p>');
+    } else {
+      html.push('<dl class="kv">');
+      html.push(`<dt>Estado</dt><dd>${esc(pt)} · ${esc(app.resumo)}</dd>`);
+      if (/^https?:\/\//i.test(app.url || '')) html.push(`<dt>Endereço</dt><dd><a href="${esc(app.url)}" target="_blank" rel="noopener">${esc(app.url)}</a></dd>`);
+      if (app.portas && app.portas.length) {
+        const portas = [...new Map(app.portas.map((x) => [x.porta, x])).values()];
+        html.push(`<dt>Portas</dt><dd>${portas.map((x) => `<a href="http://localhost:${x.porta}" target="_blank" rel="noopener">:${x.porta}</a> <span class="meta">${esc(x.programa)}</span>`).join(' · ')}</dd>`);
+      }
+      if (app.servicos && app.servicos.length) html.push(`<dt>Serviços</dt><dd>${app.servicos.map((x) => `${esc(x.exibicao || x.nome)}: ${esc(x.estado)}`).join('<br>')}</dd>`);
+      if (app.verificadoEm) html.push(`<dt>Testado</dt><dd>${ha(app.verificadoEm)}</dd>`);
+      html.push('</dl>');
+    }
+    if (s.tipo !== 'recepcao' && !app.url && !(s.portas && s.portas.length)) {
+      html.push(`<p class="dica" style="margin-top:8px">Para eu testar se o app responde, coloque <code>"url": "http://localhost:3000"</code> (ou a <code>"porta"</code>) neste projeto no <code>projetos.json</code>.</p>`);
+    }
+    html.push('</section>');
+
+    // agentes
+    const ags = s.agentes || [];
+    html.push(`<section class="secao"><h3>Agentes (${ags.filter((a) => a.visivel).length} na sala)</h3>`);
+    if (!ags.length) html.push('<p class="nada">Nenhum agente trabalhou aqui nos últimos dias.</p>');
+    else {
+      html.push('<ul class="itens">');
+      ags.slice(0, 12).forEach((a, i) => {
+        const meta = [a.ferramenta, a.modelo, a.branch ? 'branch ' + a.branch : ''].filter(Boolean).join(' · ');
+        html.push(`<li class="item com-sprite"><canvas data-robo="${i}" width="8" height="11" aria-hidden="true"></canvas>
+          <div class="linha1"><span class="nome">${esc(a.persona)}</span><span class="estado ${esc(a.estado)}">${ESTADO_NOME[a.estado] || esc(a.estado)}</span><span class="meta">${ha(a.ultimaAtividade)}${a.visivel ? '' : ' · fora da sala'}</span></div>
+          <div class="texto">${esc(a.titulo)}</div>
+          ${a.ultimaMsg ? `<div class="texto">Você pediu: <q>${esc(a.ultimaMsg)}</q></div>` : ''}
+          ${a.estado === 'esperando' ? `<div class="texto">Parado${a.ferramentaEmUso ? ' no ' + esc(a.ferramentaEmUso) : ''} ${esc(duracao(a.ultimaAtividade))}: deve estar pedindo sua permissão ou uma resposta.</div>` : ''}
+          ${a.resposta && a.estado !== 'trabalhando' ? `<div class="texto">Última resposta: <q>${esc(a.resposta)}</q></div>` : ''}
+          <div class="meta">${esc(meta)}</div></li>`);
+      });
+      html.push('</ul>');
+    }
+    html.push('</section>');
+
+    // terminais
+    const ts = s.terminais || [];
+    html.push(`<section class="secao"><h3>CMDs e terminais (${ts.length})</h3>`);
+    if (!ts.length) html.push('<p class="nada">Nenhum CMD aberto para este projeto.</p>');
+    else {
+      html.push('<ul class="itens">');
+      for (const t of ts) {
+        html.push(`<li class="item"><div class="linha1"><span class="nome">${esc(t.programa)}</span><span class="meta">PID ${esc(t.pid)} · aberto ${esc(ha(t.desde))}</span></div>
+          ${t.titulo ? `<div class="mono">${esc(t.titulo)}</div>` : ''}
+          ${t.pasta ? `<div class="mono">${esc(t.pasta)}</div>` : ''}
+          ${t.agente ? `<div class="texto">Rodando ${esc(t.agente)} dentro</div>` : t.rodando && t.rodando.length ? `<div class="texto">Rodando: ${esc(t.rodando.join(', '))}</div>` : ''}</li>`);
+      }
+      html.push('</ul>');
+    }
+    if (s.tipo === 'recepcao' && ts.length && dados.coleta && dados.coleta.modo === 'powershell' && !dados.coleta.lerPastaDosCmds) {
+      html.push('<p class="dica" style="margin-top:8px">Estes CMDs não disseram de qual projeto são. Para o Escritório ler a pasta de cada um, ligue <code>"lerPastaDosCmds": true</code> no <code>projetos.json</code> (veja o LEIAME antes: alguns antivírus de empresa estranham).</p>');
+    }
+    html.push('</section>');
+
+    // processos
+    const pr = s.processos || [];
+    if (pr.length) {
+      html.push(`<section class="secao"><h3>Processos (${pr.length})</h3><ul class="itens">`);
+      for (const x of pr.slice(0, 20)) {
+        html.push(`<li class="item"><div class="linha1"><span class="nome">${esc(x.programa)}</span><span class="meta">PID ${esc(x.pid)}${x.desde ? ' · ' + esc(ha(x.desde)) : ''}${x.portas && x.portas.length ? ' · porta ' + x.portas.join(', ') : ''}</span></div>
+          ${x.cmd ? `<div class="mono">${esc(x.cmd)}</div>` : ''}</li>`);
+      }
+      html.push('</ul></section>');
+    }
+
+    // você e janelas
+    const vc = s.voce || [];
+    const js = s.janelas || [];
+    if (vc.length || js.length) {
+      html.push('<section class="secao"><h3>Você e janelas abertas</h3><ul class="itens">');
+      for (const v of vc) html.push(`<li class="item"><div class="linha1"><span class="nome">${esc(v.onde)}</span></div><div class="mono">${esc(v.detalhe)}</div></li>`);
+      for (const j of js.slice(0, 10)) html.push(`<li class="item"><div class="linha1"><span class="nome">${esc(j.programa)}</span></div><div class="mono">${esc(j.titulo)}</div></li>`);
+      html.push('</ul></section>');
+    }
+
+    // pastas
+    if (s.pastas && s.pastas.length) {
+      html.push('<section class="secao"><h3>Pasta</h3><ul class="itens">');
+      s.pastas.forEach((pp, i) => html.push(`<li class="item"><div class="mono">${esc(pp)}<button type="button" class="copiar" data-copiar="${i}">Copiar</button></div></li>`));
+      html.push('</ul></section>');
+    }
+
+    const saida = html.join('');
+    if (!forcar && saida === ultimoPainel) return;
+    const rolagem = p.scrollTop;
+    const tinhaFoco = p.contains(document.activeElement);
+    ultimoPainel = saida;
+    p.innerHTML = saida;
+    p.scrollTop = rolagem;
+    if (tinhaFoco) $('.fechar', p).focus({ preventScroll: true });
+    const ic = $('[data-icone]', p).getContext('2d');
+    const cor = corDa(s);
+    ic.fillStyle = cor; ic.fillRect(0, 0, 8, 8);
+    desenharMapa(ic, ICONES[s.icone] || ICONES.pasta, 0, 0, { X: '#10131d' });
+    p.querySelectorAll('[data-robo]').forEach((cv) => {
+      const a = ags[Number(cv.dataset.robo)];
+      desenharMapa(cv.getContext('2d'), ROBO, 0, 0, coresRobo(a.ferramenta, a.estado, false));
+    });
+    $('.fechar', p).addEventListener('click', fecharPainel);
+    p.querySelectorAll('[data-copiar]').forEach((b) => b.addEventListener('click', async () => {
+      const texto = s.pastas[Number(b.dataset.copiar)];
+      try { await navigator.clipboard.writeText(texto); b.textContent = 'Copiado'; }
+      catch {
+        const sel = getSelection(); const rg = document.createRange(); rg.selectNodeContents(b.parentNode); sel.removeAllRanges(); sel.addRange(rg);
+        b.textContent = 'Selecionado';
+      }
+    }));
+  }
+
+  // ─────────────── filtro ───────────────
+  function ajustarFiltro(f) {
+    filtro = f;
+    guardar('escritorio.filtro', f);
+    $('#f-todas').setAttribute('aria-pressed', String(f === 'todas'));
+    $('#f-movimento').setAttribute('aria-pressed', String(f === 'movimento'));
+    if (dados) aplicar(dados);
+  }
+  $('#f-todas').addEventListener('click', () => ajustarFiltro('todas'));
+  $('#f-movimento').addEventListener('click', () => ajustarFiltro('movimento'));
+  ajustarFiltro(filtro);
+
+  // ─────────────── demonstração ───────────────
+  const inicioDemo = Date.now();
+  function demo() {
+    const t = Date.now();
+    const seg = (t - inicioDemo) / 1000;
+    const min = 60e3;
+    const ciclo = (periodoS, fases) => {
+      let x = (seg % periodoS);
+      for (const [dur, estado] of fases) { if (x < dur) return estado; x -= dur; }
+      return fases[fases.length - 1][1];
+    };
+    const ag = (id, persona, ferramenta, titulo, estado, extra = {}) => ({
+      id, persona, ferramenta, titulo, estado, visivel: true, modelo: ferramenta === 'Codex' ? 'gpt-5-codex' : 'claude-opus-5-5',
+      ultimaAtividade: t - (estado === 'trabalhando' ? 4000 : estado === 'esperando' ? 2.5 * min : 11 * min), ultimaMsg: '', resposta: '', branch: 'main', ...extra,
+    });
+    const term = (pid, programa, titulo, extra = {}) => ({ pid, programa, titulo, desde: t - 95 * min, pasta: '', agente: '', rodando: [], ...extra });
+    const app = (estado, resumo, extra = {}) => ({ estado, resumo, url: '', portas: [], servicos: [], verificadoEm: t - 6000, ...extra });
+    const semApp = () => app('sem-app', 'nada rodando', { verificadoEm: 0 });
+    const sala = (id, nome, icone, cor, descricao, extra) => ({
+      id, nome, icone, cor, descricao, tipo: 'projeto', pastas: [], app: semApp(), terminais: [], processos: [], janelas: [], voce: [], agentes: [], ...extra,
+    });
+    const liaEstado = ciclo(48, [[26, 'trabalhando'], [8, 'esperando'], [14, 'trabalhando']]);
+    const sofiaEstado = ciclo(70, [[40, 'trabalhando'], [30, 'terminou']]);
+    const cmdsKpax = seg % 90 < 45 ? 1 : 0;
+    return {
+      versao: 1, agora: t, titulo: 'Escritório do KzziN', maquina: 'PC-TRABALHO', plataforma: 'win32',
+      coleta: { modo: 'demo', ms: 0 }, avisos: [],
+      salas: [
+        sala('totem', 'Totem de Pagamento', 'totem', '#4fb3ff', 'Sistema de pagamento no totem da faculdade (app kiosk Android com WebView).', {
+          pastas: ['C:\\Projetos\\totem-faculdade'],
+          app: app('no-ar', `respondeu 200 em ${38 + Math.round(ruido(1, 2, Math.floor(seg / 10)) * 20)} ms`, { url: 'http://localhost:5173', portas: [{ porta: 5173, programa: 'node.exe' }] }),
+          terminais: [term(4120, 'CMD', 'npm run dev', { rodando: ['node.exe'] }), term(5532, 'PowerShell no VS Code', '', { desde: t - 40 * min })],
+          processos: [{ pid: 4188, programa: 'node.exe', cmd: 'node C:\\Projetos\\totem-faculdade\\node_modules\\vite\\bin\\vite.js', desde: t - 94 * min, portas: [5173] }],
+          voce: [{ onde: 'VS Code', detalhe: 'pagamento.js - totem-faculdade - Visual Studio Code' }],
+          agentes: [
+            ag('a1', 'Lia', 'Claude Code', 'Pix no totem', liaEstado, { ultimaMsg: 'arruma o pagamento via pix no totem', ferramentaEmUso: 'Bash' }),
+            ag('a2', 'Vini', 'Claude Code', 'Gerar o APK de release', 'esperando', { ultimaMsg: 'gera o apk de release sem gradle', ferramentaEmUso: 'Bash' }),
+          ],
+        }),
+        sala('ndd', 'NDD Financeiro', 'impressora', '#7bd389', 'Modernização do NDD e financeiro, consulta NDD × base local, portal mps.nddprint.com.', {
+          app: app('no-ar', 'respondeu 200 em 112 ms', { url: 'http://localhost:8080', portas: [{ porta: 8080, programa: 'python.exe' }] }),
+          terminais: [term(6010, 'CMD', 'python app.py', { rodando: ['python.exe'] })],
+          processos: [{ pid: 6044, programa: 'python.exe', cmd: 'python app.py --porta 8080', desde: t - 180 * min, portas: [8080] }],
+          agentes: [ag('a3', 'Otto', 'Codex', 'Consulta NDD × base local', 'terminou', { resposta: 'A consulta nova bate com a base local em 98% dos contratos.' })],
+        }),
+        sala('kpax', 'KPAX', 'impressora', '#ff9f5a', 'Auditoria do sistema KPAX, lista de dispositivos e conexão MCP.', {
+          app: app('erro', 'rodando, mas não respondeu em 4 s', { url: 'http://localhost:3100', portas: [{ porta: 3100, programa: 'node.exe' }] }),
+          terminais: cmdsKpax ? [term(7002, 'PowerShell no Windows Terminal', '', { agente: 'Claude Code' })] : [],
+          processos: [{ pid: 7140, programa: 'node.exe', cmd: 'node C:\\Projetos\\kpax-mcp\\dist\\index.js', desde: t - 30 * min, portas: [3100] }],
+          agentes: [
+            ag('a4', 'Pedro', 'Claude Code', 'Auditoria do sistema KPAX', 'erro', { resposta: "You've hit your session limit · resets 6:30pm", ultimaAtividade: t - 25 * min }),
+            ag('a5', 'Hugo', 'Claude Code', 'KPAX dispositivos', cmdsKpax ? 'esperando' : 'terminou', { ultimaMsg: 'lista todos os dispositivos do kpax', ferramentaEmUso: 'mcp__kpax__authenticate' }),
+          ],
+        }),
+        sala('inventory', 'Easy Inventory', 'notebook', '#b58cff', 'Monitoração dos notebooks da empresa.', {
+          app: app('no-ar', 'EasyInventoryAgent: Running', { servicos: [{ nome: 'EasyInventoryAgent', exibicao: 'Easy Inventory Agent', estado: 'Running' }] }),
+        }),
+        sala('raspberry', 'Raspberry Pi', 'raspberry', '#ff6b8b', 'Desempenho e conectividade do Raspberry.', {
+          app: app('desligado', 'conexão recusada', { url: 'http://raspberrypi.local:8000' }),
+          terminais: [term(8120, 'PowerShell', 'ssh pi@raspberrypi.local', { desde: t - 12 * min })],
+        }),
+        sala('meet', 'Meet Interno C2A', 'camera', '#3fd0c9', 'Sala de reunião por vídeo interna e gratuita, com a marca da C2A.', {
+          app: app('no-ar', 'respondeu 200 em 64 ms', { url: 'https://localhost:8443', portas: [{ porta: 8443, programa: 'node.exe' }] }),
+          terminais: [term(9001, 'CMD no VS Code', 'npm start', { rodando: ['node.exe'] })],
+          agentes: [ag('a6', 'Sofia', 'Claude Code', 'Sala com o logo da C2A', sofiaEstado, { ultimaMsg: 'coloca o logo da C2A na sala', resposta: 'Logo aplicado na tela de entrada e no rodapé.' })],
+        }),
+        sala('lexmark', 'Lexmark', 'impressora', '#e8e46a', 'Desenvolvimento nas impressoras Lexmark (autorização e integração MPS).', {}),
+        sala('imagens', 'IA de Imagens', 'imagem', '#f7a8e0', 'ComfyUI: vídeo vertical da criatura voadora e gerador de imagens próprio.', {
+          app: app('no-ar', 'respondeu 200 em 21 ms', { url: 'http://127.0.0.1:8188', portas: [{ porta: 8188, programa: 'python.exe' }] }),
+          terminais: [term(9300, 'CMD', 'python main.py --listen', { rodando: ['python.exe'], desde: t - 5 * 60 * min })],
+          processos: [{ pid: 9312, programa: 'python.exe', cmd: 'python C:\\ComfyUI\\main.py --listen', desde: t - 5 * 60 * min, portas: [8188] }],
+          agentes: [ag('a7', 'Téo', 'Claude Code', 'Vídeo vertical da criatura voadora', 'terminou', { resposta: 'Workflow salvo: 1080×1920, 5 s, 24 fps.' })],
+        }),
+        sala('cloudflare', 'Links Cloudflare', 'nuvem', '#f6a04d', 'Túneis do Cloudflare que deixam os projetos acessíveis por link.', {
+          app: app('no-ar', 'cloudflared.exe rodando'),
+          processos: [{ pid: 3020, programa: 'cloudflared.exe', cmd: 'cloudflared tunnel run totem', desde: t - 26 * 60 * min, portas: [] }],
+        }),
+        sala('codenotch', 'Codenotch', 'notch', '#9aa7ff', 'O notch que mostra o uso das IAs e se os agentes estão trabalhando.', {
+          app: app('no-ar', 'codenotch.exe rodando'),
+          processos: [{ pid: 2210, programa: 'codenotch.exe', cmd: 'codenotch.exe', desde: t - 8 * 60 * min, portas: [48666] }],
+        }),
+        sala('corpo', 'Corpo Humano 3D', 'corpo', '#ff8f70', 'Demonstração interativa do corpo humano girando.', {}),
+        { ...sala('auto-escritorio', 'escritorio', 'pasta', '', 'Descoberta sozinha pelas conversas com os agentes.', {
+          pastas: ['C:\\Projetos\\escritorio'],
+          terminais: [term(9900, 'CMD no Windows Terminal', '', { agente: 'Claude Code', desde: t - 20 * min })],
+          agentes: [ag('a8', 'Cadu', 'Claude Code', 'Escritório com todos os projetos', 'trabalhando', { ultimaMsg: 'faça um escritório com todos os meus projetos' })],
+        }), tipo: 'auto' },
+        { ...sala('recepcao', 'Recepção', 'recepcao', '#c9a86a', 'Conversas soltas, sessões do Claude Desktop e CMDs que não são de nenhum projeto.', {
+          terminais: [term(1234, 'CMD', 'C:\\WINDOWS\\system32\\cmd.exe', { desde: t - 3 * 60 * min })],
+          agentes: [ag('a9', 'Lara', 'Claude Desktop', 'Formas seguras de renda em casa', 'terminou', { ultimaAtividade: t - 8 * min })],
+        }), tipo: 'recepcao' },
+      ],
+    };
+  }
+
+  // ─────────────── busca dos dados ───────────────
+  const podeTerServidor = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|\[::1\])/.test(location.hostname) || location.hostname.endsWith('.local') || (location.port && location.port !== '443');
+  let falhas = 0;
+  let ultimaTentativa = 0;
+  async function buscar() {
+    const forcarDemo = location.hash === '#demo';
+    if (!forcarDemo && (modo !== 'demo' || (podeTerServidor && Date.now() - ultimaTentativa > 20000))) {
+      ultimaTentativa = Date.now();
+      try {
+        const ctl = new AbortController();
+        const timer = setTimeout(() => ctl.abort(), 4000);
+        const r = await fetch('api/status', { cache: 'no-store', signal: ctl.signal });
+        clearTimeout(timer);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json();
+        if (!d || !Array.isArray(d.salas)) throw new Error('resposta inesperada');
+        modo = 'vivo';
+        falhas = 0;
+        aplicar(d);
+        return;
+      } catch {
+        falhas++;
+        if (modo === 'vivo' && falhas >= 2) { modo = 'offline'; if (dados) aplicar(dados); return; }
+        if (modo === 'vivo' || modo === 'offline') return;
+      }
+    }
+    modo = 'demo';
+    aplicar(demo());
+  }
+
+  // ─────────────── laço de animação ───────────────
+  let quadro = 0;
+  let ultimoQuadro = 0;
+  function laco(ts) {
+    requestAnimationFrame(laco);
+    if (ts - ultimoQuadro < 125) return;
+    ultimoQuadro = ts;
+    if (!reduzido) quadro++;
+    for (const d of salasDom.values()) {
+      if (d.el.hidden || !d.visivel) continue;
+      if (reduzido && !d.sujo) continue;
+      d.sujo = false;
+      desenharSala(d, quadro);
+    }
+  }
+
+  function relogio() {
+    const agoraD = new Date();
+    $('#relogio').textContent = agoraD.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    atualizarFonte();
+  }
+
+  // logo e legenda
+  (function desenharEstaticos() {
+    const lg = $('#logo').getContext('2d');
+    lg.fillStyle = '#ffcf6e'; lg.fillRect(0, 0, 10, 10);
+    lg.fillStyle = '#10131d'; lg.fillRect(1, 1, 8, 8);
+    lg.fillStyle = '#ffcf6e'; lg.fillRect(2, 2, 2, 2); lg.fillRect(6, 2, 2, 2); lg.fillRect(2, 6, 2, 2);
+    lg.fillStyle = '#57d68d'; lg.fillRect(6, 6, 2, 2);
+    const c = (id) => $(id).getContext('2d');
+    const luz = c('#lg-luz'); luz.fillStyle = '#bc8e61'; luz.fillRect(0, 0, 10, 10); luz.fillStyle = 'rgba(255,214,150,0.35)'; luz.fillRect(2, 2, 6, 6); luz.fillStyle = '#ffcf6e'; luz.fillRect(4, 0, 2, 2);
+    const rk = c('#lg-rack'); rk.fillStyle = '#1e2230'; rk.fillRect(2, 0, 6, 10); rk.fillStyle = '#57d68d'; rk.fillRect(6, 2, 1, 1); rk.fillRect(6, 5, 1, 1); rk.fillStyle = '#ff5d6c'; rk.fillRect(6, 8, 1, 1);
+    desenharMapa(c('#lg-robo'), ROBO, 1, 0, coresRobo('Claude Code', 'trabalhando', false));
+    desenharMapa(c('#lg-voce'), PESSOA, 1, 0, CORES_VOCE);
+    const cm = c('#lg-cmd'); cm.fillStyle = '#c7ccd9'; cm.fillRect(0, 2, 10, 1); cm.fillStyle = '#0c0c0c'; cm.fillRect(0, 3, 10, 6); cm.fillStyle = '#9ff3a8'; cm.fillRect(1, 5, 5, 1); cm.fillStyle = '#ffffff'; cm.fillRect(7, 7, 1, 1);
+    const bl = c('#lg-balao'); balao(bl, 4, 11, '?', 0);
+  })();
+
+  buscar();
+  setInterval(buscar, 3000);
+  setInterval(relogio, 1000);
+  relogio();
+  requestAnimationFrame(laco);
+})();
+</script>
