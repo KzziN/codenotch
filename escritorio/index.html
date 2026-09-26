@@ -291,6 +291,9 @@
   const LW = 320, LH = 210;
   const TV = { x: 92, y: 12, w: 136, h: 72 };
   const MESAS = [[44, 140], [120, 140], [196, 140], [44, 186], [120, 186], [196, 186]];
+  // até 3 pessoas: uma fileira só, mais perto e maior; mais que isso: duas fileiras
+  const FILEIRA = [[56, 164], [131, 164], [206, 164]];
+  const layoutDe = (n) => (n <= 3 ? { mesas: FILEIRA, escala: 1.12 } : { mesas: MESAS, escala: 1 });
 
   function rr(g, x, y, w, h, r) {
     r = Math.min(r, w / 2, h / 2);
@@ -320,15 +323,16 @@
   }
 
   // camada de trás: parede, chão, tapete, janela, quadro, moldura do telão, rack, planta e cadeiras
-  function camadaFundo(g, sala, aceso) {
+  function camadaFundo(g, sala, aceso, lay) {
     const cor = corDa(sala);
-    const parede = mix(cor, '#f6efe4', 0.8);
+    const parede = '#efe6d8';
     let gr = g.createLinearGradient(0, 0, 0, 96);
     gr.addColorStop(0, mix(parede, '#ffffff', 0.25)); gr.addColorStop(1, mix(parede, '#b9a58c', 0.25));
     g.fillStyle = gr; g.fillRect(0, 0, LW, 96);
     g.fillStyle = 'rgba(0,0,0,0.035)';
     for (let x = 8; x < LW; x += 16) g.fillRect(x, 0, 1, 90);
-    g.fillStyle = mix(parede, '#6b4f39', 0.55); g.fillRect(0, 90, LW, 7);
+    g.fillStyle = mix(cor, '#ffffff', 0.15); g.fillRect(0, 84, LW, 3);
+    g.fillStyle = '#6f5440'; g.fillRect(0, 90, LW, 7);
     g.fillStyle = 'rgba(255,255,255,0.25)'; g.fillRect(0, 90, LW, 1);
 
     // chão de madeira
@@ -347,6 +351,13 @@
     gr.addColorStop(0, 'rgba(40,20,10,0.25)'); gr.addColorStop(0.25, 'rgba(40,20,10,0)'); gr.addColorStop(1, 'rgba(20,10,5,0.18)');
     g.fillStyle = gr; g.fillRect(0, 97, LW, LH - 97);
 
+    gr = g.createLinearGradient(0, 97, 0, 112);
+    gr.addColorStop(0, 'rgba(30,15,5,0.35)'); gr.addColorStop(1, 'rgba(30,15,5,0)');
+    g.fillStyle = gr; g.fillRect(0, 97, LW, 15);
+    if (aceso && periodo() !== 'noite') {
+      g.fillStyle = 'rgba(255,240,200,0.10)';
+      g.beginPath(); g.moveTo(252, 97); g.lineTo(306, 97); g.lineTo(270, 210); g.lineTo(200, 210); g.closePath(); g.fill();
+    }
     // tapete com a cor do projeto
     caixa(g, 10, 108, 232, 98, 20, rgba(mix(cor, '#1d1a2e', 0.45), 0.9));
     rr(g, 17, 115, 218, 84, 15); g.strokeStyle = rgba('#ffffff', 0.22); g.setLineDash([4, 4]); g.lineWidth = 1.2; g.stroke(); g.setLineDash([]);
@@ -363,7 +374,7 @@
     else if (p === 'noite') { bola(g, 293, 21, 5, '#f7f3cf'); bola(g, 295, 20, 4.5, '#16204a'); for (const [sx, sy] of [[260, 18], [270, 30], [282, 40], [300, 44], [266, 44]]) bola(g, sx, sy, 0.9, '#ffffff'); }
     else bola(g, 290, 40, 7, '#ffcf6e');
     g.fillStyle = '#fbf6ec'; g.fillRect(278, 12, 2, 40); g.fillRect(252, 31, 54, 2);
-    caixa(g, 244, 6, 8, 54, 3, mix(cor, '#ffffff', 0.35)); caixa(g, 306, 6, 8, 54, 3, mix(cor, '#ffffff', 0.35));
+    caixa(g, 244, 6, 8, 54, 3, mix(cor, '#efe6d8', 0.45)); caixa(g, 306, 6, 8, 54, 3, mix(cor, '#efe6d8', 0.45));
 
     // quadro de CMDs (fundo do quadro)
     caixa(g, 8, 8, 76, 70, 8, '#1a1d2c');
@@ -395,9 +406,13 @@
     bola(g, 293, 180, 5, '#f3c98b'); bola(g, 293, 180, 2, '#c47f3c');
 
     // cadeiras (as pessoas sentam na frente delas)
-    for (const [cx, y] of MESAS) {
-      caixa(g, cx - 16, y - 38, 32, 34, 12, '#2f3654');
-      caixa(g, cx - 12, y - 34, 24, 26, 9, '#3e4770');
+    for (const [cx, y] of lay.mesas) {
+      g.save(); g.translate(cx, y); g.scale(lay.escala, lay.escala);
+      g.fillStyle = 'rgba(0,0,0,0.18)'; g.beginPath(); g.ellipse(0, 4, 22, 5, 0, 0, Math.PI * 2); g.fill();
+      caixa(g, -15, -36, 30, 32, 11, '#2b3150');
+      caixa(g, -12, -33, 24, 24, 8, '#39416a');
+      g.fillStyle = 'rgba(255,255,255,0.08)'; rr(g, -10, -31, 20, 4, 2); g.fill();
+      g.restore();
     }
 
     // luz
@@ -406,19 +421,24 @@
       luz.addColorStop(0, 'rgba(255,220,160,0.20)'); luz.addColorStop(1, 'rgba(255,220,160,0)');
       g.fillStyle = luz; g.fillRect(0, 0, LW, LH);
     } else {
-      g.fillStyle = 'rgba(6,8,22,0.66)'; g.fillRect(0, 0, LW, LH);
+      g.fillStyle = 'rgba(10,16,44,0.58)'; g.fillRect(0, 0, LW, LH);
+      const v = g.createRadialGradient(160, 110, 40, 160, 110, 200);
+      v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,10,0.35)');
+      g.fillStyle = v; g.fillRect(0, 0, LW, LH);
     }
   }
 
   // camada da frente: as mesas (ficam na frente das pessoas)
-  function camadaFrente(g, aceso) {
-    for (const [cx, y] of MESAS) {
+  function camadaFrente(g, aceso, lay) {
+    for (const [cx, y] of lay.mesas) {
+      g.save(); g.translate(cx, y); g.scale(lay.escala, lay.escala); g.translate(-cx, -y);
       g.fillStyle = 'rgba(0,0,0,0.2)'; rr(g, cx - 30, y + 16, 60, 6, 3); g.fill();
       caixa(g, cx - 31, y, 62, 16, 6, '#a86d42');
       caixa(g, cx - 31, y, 62, 12, 6, '#c8895a');
       g.fillStyle = 'rgba(255,255,255,0.18)'; rr(g, cx - 29, y + 1, 58, 3, 2); g.fill();
+      g.restore();
     }
-    if (!aceso) { g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(6,8,22,0.66)'; g.fillRect(0, 0, LW, LH); g.globalCompositeOperation = 'source-over'; }
+    if (!aceso) { g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(10,16,44,0.58)'; g.fillRect(0, 0, LW, LH); g.globalCompositeOperation = 'source-over'; }
   }
 
   // ── robôs e pessoas ──
@@ -897,12 +917,13 @@
     if (chaveCrachas !== d.chaveCrachas) {
       d.chaveCrachas = chaveCrachas;
       d.crachas.innerHTML = '';
-      oc.slice(0, MESAS.length).forEach((o, i) => {
-        const [cx, y] = MESAS[i];
+      const { mesas: ms, escala: es } = layoutDe(oc.length);
+      oc.slice(0, ms.length).forEach((o, i) => {
+        const [cx, y] = ms[i];
         const t = document.createElement('span');
         t.className = 'cracha ' + (o.tipo === 'voce' ? 'voce' : o.agente.estado);
         t.style.left = (cx / LW * 100) + '%';
-        t.style.top = ((y + 9) / LH * 100) + '%';
+        t.style.top = ((y + 9 * es) / LH * 100) + '%';
         t.textContent = o.tipo === 'voce' ? 'Você' : o.agente.persona;
         d.crachas.appendChild(t);
       });
@@ -924,11 +945,12 @@
   function camadas(d) {
     const s = d.sala;
     const aceso = acesa(s);
-    const chave = [d.cv.width, corDa(s), s.tipo, aceso, periodo()].join('|');
+    const lay = layoutDe(ocupantes(s).length);
+    const chave = [d.cv.width, corDa(s), s.tipo, aceso, periodo(), lay.mesas.length].join('|');
     if (d.cache && d.cache.chave === chave) return d.cache;
     const k = d.cv.width / LW;
     const mk = (fn) => { const c = document.createElement('canvas'); c.width = d.cv.width; c.height = d.cv.height; const g = c.getContext('2d'); g.scale(k, k); fn(g); return c; };
-    d.cache = { chave, fundo: mk((g) => camadaFundo(g, s, aceso)), frente: mk((g) => camadaFrente(g, aceso)) };
+    d.cache = { chave, lay, fundo: mk((g) => camadaFundo(g, s, aceso, lay)), frente: mk((g) => camadaFrente(g, aceso, lay)) };
     return d.cache;
   }
 
@@ -944,28 +966,32 @@
     telao(g, s, t, !!d.iframe);
     quadroCmds(g, s.terminais || [], t);
     rack(g, s.app ? s.app.estado : 'sem-app', t, semente);
-    const oc = ocupantes(s).slice(0, MESAS.length);
+    const { mesas, escala } = c.lay;
+    const oc = ocupantes(s).slice(0, mesas.length);
     const topos = [];
+    const naMesa = (cx, y, fn) => { g.save(); g.translate(cx, y); g.scale(escala, escala); g.translate(-cx, -y); const r = fn(); g.restore(); return y - (y - r) * escala; };
     oc.forEach((o, i) => {
-      const [cx, y] = MESAS[i];
-      topos[i] = o.tipo === 'voce' ? pessoa(g, cx, y, t) : robo(g, cx, y, o.agente.ferramenta, o.agente.estado, t, semente + i * 3);
+      const [cx, y] = mesas[i];
+      g.fillStyle = 'rgba(0,0,0,0.14)'; g.beginPath(); g.ellipse(cx, y - 2, 16 * escala, 4, 0, 0, Math.PI * 2); g.fill();
+      topos[i] = naMesa(cx, y, () => (o.tipo === 'voce' ? pessoa(g, cx, y, t) : robo(g, cx, y, o.agente.ferramenta, o.agente.estado, t, semente + i * 3)));
     });
     g.setTransform(1, 0, 0, 1, 0, 0);
     g.drawImage(c.frente, 0, 0);
     g.setTransform(k, 0, 0, k, 0, 0);
-    MESAS.forEach(([cx, y], i) => {
+    mesas.forEach(([cx, y], i) => {
       const o = oc[i];
-      notebook(g, cx, y, o ? (o.tipo === 'voce' ? 'voce' : o.agente.estado) : '', t);
+      naMesa(cx, y, () => notebook(g, cx, y, o ? (o.tipo === 'voce' ? 'voce' : o.agente.estado) : '', t));
       if (!o || o.tipo === 'voce') return;
-      if (o.agente.estado === 'terminou') { caixa(g, cx + 20, y + 1, 6, 7, 2, '#ffffff'); if (!reduzido) { g.fillStyle = `rgba(255,255,255,${0.3 + Math.sin(t * 3) * 0.2})`; g.fillRect(cx + 22, y - 5 - (t * 3) % 3, 1.2, 3); } }
+      if (o.agente.estado === 'terminou') naMesa(cx, y, () => { caixa(g, cx + 20, y + 1, 6, 7, 2, '#ffffff'); if (!reduzido) { g.fillStyle = `rgba(255,255,255,${0.3 + Math.sin(t * 3) * 0.2})`; g.fillRect(cx + 22, y - 5 - (t * 3) % 3, 1.2, 3); } });
     });
     oc.forEach((o, i) => {
       if (o.tipo === 'voce') return;
       const st = o.agente.estado;
       const tipo = st === 'trabalhando' ? '...' : st === 'esperando' ? '?' : st === 'erro' ? '!' : st === 'terminou' ? 'ok' : 'z';
-      balao(g, MESAS[i][0] + 12, topos[i] - 16, tipo, t);
+      balao(g, mesas[i][0] + 12 * escala, topos[i] - 16, tipo, t);
     });
-    if (!acesa(s)) { g.fillStyle = 'rgba(6,8,22,0.15)'; g.fillRect(0, 0, LW, LH); }
+    const e = s.app ? s.app.estado : '';
+    if (!acesa(s) && (e === 'no-ar' || e === 'erro')) brilho(g, 160, 120, 120, e === 'erro' ? '#ff5c70' : '#8fb8ff', 0.1);
   }
 
   // ─────────────── aplicar os dados ───────────────
