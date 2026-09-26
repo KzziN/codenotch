@@ -1234,19 +1234,21 @@ function acesso(req, cfg) {
 function paginaEntrar(msg) {
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entrar · Escritório</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Nunito:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..700&family=Geist:wght@400..600&display=swap">
 <style>
   :root { color-scheme: dark; }
   body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; box-sizing: border-box;
-    font-family: Nunito, system-ui, sans-serif; color: #f1f3fb;
-    background: radial-gradient(900px 500px at 20% -10%, #24305a, transparent 60%), #121626; }
-  form { width: min(360px, 100%); background: #1e2440; border: 1px solid #333c66; border-radius: 22px; padding: 26px 22px; display: grid; gap: 14px; }
-  h1 { margin: 0; font-family: Fredoka, Nunito, sans-serif; font-weight: 600; font-size: 24px; }
-  p { margin: 0; color: #a9b1d3; }
-  label { font-weight: 800; font-size: 14px; }
-  input { font: inherit; padding: 12px 14px; border-radius: 12px; border: 1px solid #333c66; background: #0f1322; color: #f1f3fb; }
-  input:focus { outline: 3px solid #ffc86b; outline-offset: 1px; }
-  button { font: inherit; font-weight: 800; padding: 12px; border: 0; border-radius: 999px; background: #ffc86b; color: #1d1405; cursor: pointer; }
+    font-family: Geist, 'Segoe UI', system-ui, sans-serif; color: #eceef6;
+    background: radial-gradient(900px 500px at 15% -10%, rgba(92, 120, 255, .18), transparent 62%), #0d0f17; }
+  form { width: min(380px, 100%); background: rgba(22, 25, 37, .8); border: 1px solid rgba(255, 255, 255, .1); border-radius: 26px; padding: 28px 24px; display: grid; gap: 14px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .08) inset, 0 30px 80px -20px rgba(0, 0, 0, .8); }
+  h1 { margin: 0; font-family: 'Bricolage Grotesque', Geist, sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -.015em; }
+  p { margin: 0; color: #a4a9bf; }
+  label { font-weight: 600; font-size: 13px; color: #a4a9bf; }
+  input { font: inherit; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, .12); background: #0b0d14; color: #eceef6; }
+  input:focus { outline: 2px solid #ffc46b; outline-offset: 2px; }
+  button { font: inherit; font-weight: 600; padding: 12px; border: 0; border-radius: 999px; background: #eceef6; color: #0d0f17; cursor: pointer; }
+  button:hover { background: #fff; }
   .erro { color: #ff8d9c; }
 </style></head><body>
 <form method="post" action="entrar">

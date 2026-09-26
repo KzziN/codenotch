@@ -1,225 +1,303 @@
 <title>Escritório do KzziN</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23ffb070'/%3E%3Crect x='5' y='4' width='14' height='17' rx='3' fill='%231b1d2b'/%3E%3Crect x='7.5' y='6.5' width='3.5' height='3' rx='.8' fill='%23ffc46b'/%3E%3Crect x='13' y='6.5' width='3.5' height='3' rx='.8' fill='%235cc8ff'/%3E%3Crect x='7.5' y='11' width='3.5' height='3' rx='.8' fill='%233ddc97'/%3E%3Crect x='10.3' y='16' width='3.4' height='5' rx='.8' fill='%23ffc46b'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
 <style>
+  /* Um mundo só (o escritório à noite): tema escuro de propósito. A moldura é neutra;
+     a cor fica para o que tem significado (status) e para o desenho das salas. */
   :root {
     color-scheme: dark;
-    --noite: #121626;
-    --noite-2: #171c30;
-    --card: #1e2440;
-    --card-2: #272f52;
-    --poco: #0f1322;
-    --linha: #333c66;
-    --texto: #f1f3fb;
-    --suave: #a9b1d3;
-    --fraco: #737ba0;
-    --ambar: #ffc86b;
-    --noar: #4fd88a;
-    --espera: #ffb347;
-    --erro: #ff5c70;
-    --trab: #62c3ff;
-    --desl: #69719a;
-    --f-titulo: 'Fredoka', 'Nunito', system-ui, sans-serif;
-    --f-texto: 'Nunito', 'Segoe UI', system-ui, sans-serif;
-    --f-mono: 'JetBrains Mono', Consolas, 'Courier New', monospace;
-    --sombra: 0 10px 30px rgba(3, 5, 15, .45), 0 2px 6px rgba(3, 5, 15, .35);
+    --fundo: #0d0f17;
+    --superficie: #161925;
+    --superficie-2: #1c2030;
+    --poco: #0b0d14;
+    --linha: rgba(255, 255, 255, .075);
+    --linha-forte: rgba(255, 255, 255, .14);
+    --brilho: rgba(255, 255, 255, .06);
+    --texto: #eceef6;
+    --suave: #a4a9bf;
+    --fraco: #6c7290;
+    --ambar: #ffc46b;
+    --noar: #3ddc97;
+    --espera: #ffb547;
+    --erro: #ff5a6e;
+    --trab: #5cc8ff;
+    --desl: #6a7090;
+    --f-titulo: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+    --f-texto: 'Geist', 'Segoe UI', system-ui, sans-serif;
+    --f-mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+    --raio: 20px;
+    --sombra: 0 1px 0 var(--brilho) inset, 0 18px 40px -18px rgba(0, 0, 0, .7);
+    --mola: linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1);
   }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
-  html, body { background: var(--noite); color: var(--texto); }
+  html, body { background: var(--fundo); color: var(--texto); }
   body {
-    margin: 0; font-family: var(--f-texto); font-size: 16px; line-height: 1.45;
-    background: radial-gradient(1200px 600px at 20% -10%, #24305a 0%, transparent 60%), radial-gradient(900px 500px at 110% 10%, #3a2548 0%, transparent 55%), var(--noite);
+    margin: 0; font-family: var(--f-texto); font-size: 15px; line-height: 1.5; font-feature-settings: 'ss01';
+    background:
+      radial-gradient(1100px 520px at 12% -12%, rgba(92, 120, 255, .16), transparent 62%),
+      radial-gradient(900px 480px at 100% 0%, rgba(255, 150, 90, .09), transparent 60%),
+      var(--fundo);
     background-attachment: fixed;
   }
-  button { font: inherit; color: inherit; }
-  a { color: var(--trab); }
-  :focus-visible { outline: 3px solid var(--ambar); outline-offset: 3px; }
-
-  .hud {
-    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
-    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px;
-    padding: 12px 20px; background: rgba(22, 27, 48, .86); backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(255, 255, 255, .07);
+  /* grão bem leve, para a tela não parecer plástico */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  .marca { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 260px; }
-  .logo { width: 42px; height: 42px; border-radius: 14px; flex: none; background: linear-gradient(135deg, #ffc86b, #ff8a5c); display: grid; place-items: center; box-shadow: 0 6px 18px rgba(255, 150, 90, .35); }
-  .logo svg { width: 26px; height: 26px; }
-  .marca h1 { margin: 0; font-family: var(--f-titulo); font-weight: 700; font-size: 22px; line-height: 1.1; text-wrap: balance; }
-  .fonte { margin: 2px 0 0; color: var(--suave); font-size: 14px; display: flex; align-items: center; gap: 8px; }
-  .fonte > span:last-child { min-width: 0; }
-  .fonte .luz { width: 9px; height: 9px; border-radius: 50%; background: var(--noar); box-shadow: 0 0 10px var(--noar); flex: none; }
-  .fonte.demo .luz { background: var(--ambar); box-shadow: 0 0 10px var(--ambar); }
-  .fonte.offline .luz { background: var(--erro); box-shadow: 0 0 10px var(--erro); }
-  .placar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
-  .placar > div { min-width: 112px; padding: 7px 14px 8px; background: var(--poco); border: 1px solid var(--linha); border-radius: 14px; display: grid; gap: 2px; }
-  .placar dt { font-size: 12px; color: var(--suave); font-weight: 700; }
-  .placar dd { margin: 0; font-family: var(--f-titulo); font-weight: 600; font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 4px; }
-  .placar dd small { font-size: 14px; color: var(--fraco); }
+  button { font: inherit; color: inherit; }
+  a { color: var(--trab); text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--ambar); outline-offset: 3px; border-radius: 8px; }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  .num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+
+  /* ── cápsula de vidro no topo ── */
+  .hud {
+    position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); z-index: 20; margin: 12px 16px 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding: 10px 12px 10px 14px;
+    border-radius: 22px; background: rgba(22, 25, 37, .62); border: 1px solid var(--linha);
+    -webkit-backdrop-filter: blur(22px) saturate(170%); backdrop-filter: blur(22px) saturate(170%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .08) inset, 0 20px 50px -20px rgba(0, 0, 0, .8);
+  }
+  .marca { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 240px; }
+  .logo { width: 38px; height: 38px; border-radius: 12px; flex: none; display: grid; place-items: center; background: linear-gradient(145deg, #ffd48a, #ff9a62); box-shadow: 0 0 0 1px rgba(255, 255, 255, .25) inset, 0 8px 22px -6px rgba(255, 150, 90, .6); }
+  .logo svg { width: 22px; height: 22px; }
+  .marca > div { min-width: 0; }
+  .marca h1 { margin: 0; font-family: var(--f-titulo); font-weight: 700; font-size: 19px; line-height: 1.1; font-variation-settings: 'opsz' 32; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fonte { margin: 2px 0 0; color: var(--suave); font-size: 13px; display: flex; align-items: center; gap: 7px; min-width: 0; }
+  .fonte > span:last-child { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fonte .luz { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--noar); box-shadow: 0 0 0 3px rgba(61, 220, 151, .18); }
+  .fonte.demo .luz { background: var(--ambar); box-shadow: 0 0 0 3px rgba(255, 196, 107, .18); }
+  .fonte.offline .luz { background: var(--erro); box-shadow: 0 0 0 3px rgba(255, 90, 110, .2); }
+  .placar { display: flex; margin: 0; background: rgba(0, 0, 0, .22); border: 1px solid var(--linha); border-radius: 16px; overflow: hidden; }
+  .placar > div { padding: 6px 16px 7px; display: grid; gap: 1px; min-width: 0; }
+  .placar > div + div { border-left: 1px solid var(--linha); }
+  .placar dt { font-size: 11.5px; color: var(--fraco); font-weight: 500; white-space: nowrap; }
+  .placar dd { margin: 0; font-family: var(--f-mono); font-weight: 500; font-size: 21px; line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -.03em; display: flex; align-items: baseline; gap: 3px; }
+  .placar dd small { font-size: 13px; color: var(--fraco); }
   .placar .p-noar dd { color: var(--noar); }
   .placar .p-trab dd { color: var(--trab); }
-  .placar .p-chama.tem { border-color: var(--espera); background: rgba(255, 179, 71, .08); }
-  .placar .p-chama.tem dd { color: var(--espera); }
-  .hud-fim { display: flex; align-items: center; gap: 14px; }
-  .sino { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; padding: 7px 12px; border-radius: 999px; background: var(--poco); border: 1px solid var(--linha); color: var(--suave); font-size: 13px; font-weight: 800; }
-  .sino svg { width: 17px; height: 17px; }
-  .sino[aria-pressed="true"] { color: #1d1405; background: var(--ambar); border-color: var(--ambar); }
-  .sino:hover { border-color: var(--ambar); }
-  .relogio { font-family: var(--f-titulo); font-weight: 600; font-size: 24px; color: var(--ambar); font-variant-numeric: tabular-nums; }
+  .placar .p-chama.tem { background: rgba(255, 181, 71, .1); }
+  .placar .p-chama.tem dd, .placar .p-chama.tem dt { color: var(--espera); }
+  .hud-fim { display: flex; align-items: center; gap: 10px; }
+  .sino { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; height: 38px; padding: 0 14px; border-radius: 999px; background: rgba(255, 255, 255, .05); border: 1px solid var(--linha); color: var(--suave); font-size: 13px; font-weight: 500; }
+  .sino svg { width: 16px; height: 16px; }
+  .sino:hover { border-color: var(--linha-forte); color: var(--texto); }
+  .sino[aria-pressed="true"] { color: #241603; background: var(--ambar); border-color: transparent; }
+  .relogio { font-family: var(--f-mono); font-weight: 500; font-size: 20px; color: var(--texto); font-variant-numeric: tabular-nums; letter-spacing: -.03em; padding: 0 6px; }
 
-  .conteudo { padding-inline: 16px; padding-block: 18px 44px; max-width: 1720px; margin: 0 auto; display: grid; gap: 16px; }
-  .faixa { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; padding: 12px 16px; border-radius: 16px; background: rgba(255, 200, 107, .09); border: 1px solid rgba(255, 200, 107, .35); color: #ffe6b5; font-size: 15px; }
-  .faixa strong { font-family: var(--f-titulo); font-weight: 600; font-size: 13px; color: #1d1405; background: var(--ambar); border-radius: 999px; padding: 2px 10px; }
-  .faixa p { margin: 0; flex: 1 1 320px; max-width: 82ch; }
-  .faixa code { font-family: var(--f-mono); font-size: 14px; color: #fff; }
-  .faixa.aviso { background: rgba(255, 92, 112, .09); border-color: rgba(255, 92, 112, .4); color: #ffd0d6; }
+  .conteudo { position: relative; z-index: 1; padding-inline: 16px; padding-block: 18px 48px; max-width: 1760px; margin: 0 auto; display: grid; gap: 18px; }
+
+  .faixa { display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 14px; background: rgba(255, 196, 107, .07); border: 1px solid rgba(255, 196, 107, .22); color: #f3dfb8; font-size: 14px; }
+  .faixa strong { flex: none; font-weight: 600; font-size: 12px; color: #241603; background: var(--ambar); border-radius: 999px; padding: 2px 9px; }
+  .faixa p { margin: 0; flex: 1; max-width: 110ch; }
+  .faixa .curto { display: none; }
+  .faixa code { font-family: var(--f-mono); font-size: 13px; color: #fff; }
+  .faixa.aviso { background: rgba(255, 90, 110, .07); border-color: rgba(255, 90, 110, .3); color: #ffd3d9; }
   .faixa.aviso strong { background: var(--erro); color: #2a0610; }
 
   .chamados { display: flex; flex-wrap: wrap; gap: 8px; }
   .chamados:empty { display: none; }
-  .chamado { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; cursor: pointer; background: var(--card); border: 1px solid var(--espera); border-radius: 999px; font-size: 15px; text-align: left; }
-  .chamado.erro { border-color: var(--erro); }
-  .chamado b { font-family: var(--f-titulo); font-weight: 600; font-size: 12px; padding: 3px 9px; border-radius: 999px; background: var(--espera); color: #1d1406; }
-  .chamado.erro b { background: var(--erro); color: #22060a; }
-  .chamado span { color: var(--suave); }
-  .chamado:hover { background: var(--card-2); }
+  .chamado { display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; cursor: pointer; background: var(--superficie); border: 1px solid rgba(255, 181, 71, .35); border-radius: 999px; font-size: 14px; text-align: left; box-shadow: var(--sombra); }
+  .chamado.erro { border-color: rgba(255, 90, 110, .4); }
+  .chamado b { font-weight: 600; font-size: 12px; padding: 3px 9px; border-radius: 999px; background: rgba(255, 181, 71, .16); color: var(--espera); }
+  .chamado.erro b { background: rgba(255, 90, 110, .16); color: var(--erro); }
+  .chamado span { color: var(--fraco); }
+  .chamado:hover { background: var(--superficie-2); }
 
-  .barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
-  .barra h2 { margin: 0; font-family: var(--f-titulo); font-weight: 600; font-size: 15px; color: var(--suave); }
-  .filtro { display: inline-flex; padding: 3px; gap: 3px; background: var(--poco); border: 1px solid var(--linha); border-radius: 999px; }
-  .filtro button { background: transparent; border: 0; padding: 6px 14px; border-radius: 999px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--suave); }
-  .filtro button[aria-pressed="true"] { background: var(--card-2); color: var(--texto); }
+  /* ── o prédio: salas em movimento numa grade bento, salas vazias em lista compacta ── */
+  .andares { display: grid; gap: 26px; }
+  .zona-topo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .zona h2, .zona summary { margin: 0; font-family: var(--f-titulo); font-weight: 600; font-size: 20px; letter-spacing: -.01em; font-variation-settings: 'opsz' 40; }
+  .zona h2 .num, .zona summary .num { color: var(--fraco); font-size: 15px; font-weight: 400; margin-left: 6px; }
+  .zona-dica { margin: 0; color: var(--fraco); font-size: 13px; }
+  .zona-vazias summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; width: fit-content; }
+  .zona-vazias summary::-webkit-details-marker { display: none; }
+  .zona-vazias summary::before { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--fraco); border-bottom: 2px solid var(--fraco); rotate: -45deg; transition: rotate .2s; margin-right: 4px; }
+  .zona-vazias[open] summary::before { rotate: 45deg; }
+  .predio { container: predio / inline-size; display: grid; gap: 16px; grid-auto-flow: dense; grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr)); }
+  .predio-vazio { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
+  .vazio-filtro { grid-column: 1 / -1; color: var(--suave); padding: 28px; text-align: center; border: 1px dashed var(--linha-forte); border-radius: var(--raio); }
 
-  .predio { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
-  .vazio-filtro { grid-column: 1 / -1; color: var(--suave); padding: 24px; text-align: center; }
-  .sala { position: relative; display: grid; cursor: pointer; background: var(--card); border-radius: 22px; overflow: hidden; box-shadow: var(--sombra); border: 1px solid rgba(255, 255, 255, .06); }
+  .sala { position: relative; display: flex; flex-direction: column; cursor: pointer; min-width: 0; background: var(--superficie); border-radius: var(--raio); border: 1px solid var(--linha); box-shadow: var(--sombra); }
   @media (prefers-reduced-motion: no-preference) {
-    .sala { transition: transform .18s ease, box-shadow .18s ease; }
-    .sala:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(3, 5, 15, .55); }
-    .sala.chama::after { animation: chama 1.4s ease-in-out infinite; }
+    .sala { transition: translate .35s var(--mola), border-color .2s, background .2s; }
+    .sala:hover { translate: 0 -3px; }
+    .sala.chama::after { animation: chama 1.6s ease-in-out infinite; }
+    ::view-transition-group(*) { animation-duration: .5s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
   }
-  .sala.chama::after { content: ""; position: absolute; inset: 0; border-radius: 22px; border: 3px solid var(--espera); pointer-events: none; }
-  .sala.chama.erro::after { border-color: var(--erro); }
-  @keyframes chama { 50% { opacity: .15; } }
-  .placa { display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-width: 0; }
-  .selo { width: 30px; height: 30px; border-radius: 10px; flex: none; display: grid; place-items: center; font-family: var(--f-titulo); font-weight: 700; font-size: 13px; color: #101322; background: var(--c); box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .18); }
-  .placa h3 { margin: 0; flex: 1; min-width: 0; font-family: var(--f-titulo); font-weight: 600; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .placa .auto { font-size: 11px; font-weight: 800; color: var(--trab); background: rgba(98, 195, 255, .12); border-radius: 999px; padding: 1px 8px; flex: none; }
-  .pilula { flex: none; font-family: var(--f-titulo); font-weight: 600; font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--desl); color: #0b0d14; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
-  .pilula::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .55; }
-  .pilula.no-ar { background: var(--noar); }
-  .pilula.erro { background: var(--erro); }
-  .pilula.desligado { background: #353d63; color: #cfd4ee; }
-  .pilula.uso { background: var(--trab); }
-  .pilula.vazia { background: #262d4a; color: var(--fraco); }
-  .cena { position: relative; container-type: inline-size; margin: 0 10px; border-radius: 16px; overflow: hidden; }
+  .sala:hover { border-color: var(--linha-forte); background: var(--superficie-2); }
+  .sala.chama::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; box-shadow: 0 0 0 2px var(--espera), 0 0 30px -4px rgba(255, 181, 71, .5); }
+  .sala.chama.erro::after { box-shadow: 0 0 0 2px var(--erro), 0 0 30px -4px rgba(255, 90, 110, .5); }
+  @keyframes chama { 50% { opacity: .35; } }
+  .placa { display: flex; align-items: center; gap: 10px; padding: 12px 14px 10px; min-width: 0; }
+  .selo { width: 32px; height: 32px; border-radius: 10px; flex: none; display: grid; place-items: center; color: var(--c); background: color-mix(in oklab, var(--c) 14%, transparent); box-shadow: 0 0 0 1px color-mix(in oklab, var(--c) 28%, transparent) inset; }
+  .selo svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .placa h3 { margin: 0; flex: 1; min-width: 0; font-family: var(--f-titulo); font-weight: 600; font-size: 17px; letter-spacing: -.01em; font-variation-settings: 'opsz' 24; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .placa h3.longo { font-stretch: 84%; }
+  .placa .auto { font-size: 11px; font-weight: 600; color: var(--trab); background: rgba(92, 200, 255, .12); border-radius: 999px; padding: 1px 8px; flex: none; }
+  .pilula { flex: none; font-size: 12px; font-weight: 600; padding: 3px 10px 3px 8px; border-radius: 999px; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; color: var(--suave); background: rgba(255, 255, 255, .05); box-shadow: 0 0 0 1px var(--linha) inset; }
+  .pilula::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .pilula.no-ar { color: var(--noar); background: rgba(61, 220, 151, .1); box-shadow: 0 0 0 1px rgba(61, 220, 151, .22) inset; }
+  .pilula.erro { color: var(--erro); background: rgba(255, 90, 110, .1); box-shadow: 0 0 0 1px rgba(255, 90, 110, .25) inset; }
+  .pilula.desligado { color: #c3c7da; }
+  .pilula.uso { color: var(--trab); background: rgba(92, 200, 255, .1); box-shadow: 0 0 0 1px rgba(92, 200, 255, .22) inset; }
+  .pilula.vazia { color: var(--fraco); }
+  .cena { position: relative; container-type: inline-size; margin: 0 10px; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0, 0, 0, .4); }
   .cena canvas { display: block; width: 100%; height: auto; aspect-ratio: 320 / 210; }
   .tv-vivo { position: absolute; overflow: hidden; border-radius: 3px; background: #000; pointer-events: none; }
   .tv-vivo iframe { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; border: 0; transform-origin: 0 0; background: #fff; }
-  .tv-vivo .ao-vivo { position: absolute; right: 4px; top: 4px; font: 800 9px/1 var(--f-texto); color: #fff; background: #e5334b; border-radius: 4px; padding: 2px 4px; letter-spacing: .04em; }
-  .cracha { position: absolute; transform: translate(-50%, -50%); max-width: 21%; font-size: clamp(10px, 3.4cqw, 13px); font-weight: 800; line-height: 1.2; padding: 1px 7px 2px; border-radius: 999px; background: rgba(15, 18, 32, .82); color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
-  .cracha.voce { background: #3d63e0; }
-  .cracha.esperando { background: #7a4a07; color: #ffe0ad; }
-  .cracha.erro { background: #7e1a2a; color: #ffd0d6; }
+  .tv-vivo .ao-vivo { position: absolute; right: 4px; top: 4px; font: 700 9px/1 var(--f-texto); color: #fff; background: #e5334b; border-radius: 4px; padding: 2px 4px; letter-spacing: .06em; }
+  .cracha { position: absolute; transform: translate(-50%, -50%); max-width: 21%; font-size: clamp(10px, 3.3cqw, 12.5px); font-weight: 600; line-height: 1.25; padding: 1px 8px 2px; border-radius: 999px; background: rgba(12, 14, 22, .8); color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, .1) inset; }
+  .cracha.voce { background: #3b5fe0; }
+  .cracha.esperando { background: #6e4306; color: #ffe2b2; }
+  .cracha.erro { background: #75172a; color: #ffd3d9; }
   .cracha.mais { right: 3%; left: auto; bottom: 3%; top: auto; transform: none; }
-  .fatos { display: flex; gap: 6px 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 10px 14px 12px; font-size: 13.5px; color: var(--suave); }
-  .fatos .app { min-width: 0; flex: 1 1 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .fatos .contas { display: flex; gap: 6px; flex: none; font-variant-numeric: tabular-nums; }
-  .fatos .contas span { background: var(--poco); border-radius: 999px; padding: 1px 9px; }
-  .fatos .contas b { color: var(--texto); }
+  .feed { list-style: none; margin: 10px 14px 0; padding: 0; display: none; gap: 2px; }
+  .feed li { display: grid; grid-template-columns: 8px auto 1fr auto; align-items: baseline; gap: 8px; padding: 5px 0; border-top: 1px solid var(--linha); font-size: 13.5px; min-width: 0; }
+  .feed li:first-child { border-top: 0; }
+  .feed b { font-weight: 600; }
+  .feed span { color: var(--suave); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .feed time { color: var(--fraco); font-family: var(--f-mono); font-size: 12px; }
+  .ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--desl); translate: 0 -1px; }
+  .ponto.trabalhando { background: var(--trab); } .ponto.esperando { background: var(--espera); } .ponto.erro { background: var(--erro); }
+  .ponto.terminou { background: var(--noar); } .ponto.voce { background: #7d9bff; }
+  .fatos { margin-top: auto; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px 12px; padding: 10px 14px 13px; font-size: 13px; color: var(--suave); }
+  .fatos .app { grid-column: 1 / -1; min-width: 0; display: flex; align-items: center; gap: 7px; }
+  .fatos .app-texto { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .fatos .contas { display: flex; gap: 6px; flex-wrap: wrap; }
+  .fatos .contas span { background: rgba(255, 255, 255, .045); border-radius: 999px; padding: 1px 9px; font-size: 12.5px; }
+  .fatos .contas b { color: var(--texto); font-weight: 600; font-family: var(--f-mono); }
+  .fatos time { color: var(--fraco); font-family: var(--f-mono); font-size: 12px; white-space: nowrap; }
+  /* destaque: quem precisa de você ou tem gente trabalhando ocupa 2 × 2 e mostra o que cada um faz */
+  @container predio (min-width: 700px) {
+    .sala.destaque { grid-column: span 2; grid-row: span 2; }
+  }
+  .sala.destaque .feed { display: grid; }
+  .sala.destaque .placa h3 { font-size: 20px; }
+  /* sala vazia: cartão baixo, com a miniatura da sala ao lado */
+  .sala.compacta { display: grid; grid-template-columns: 112px 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 12px; padding: 10px; border-radius: 16px; }
+  .sala.compacta .cena { grid-column: 1; grid-row: 1 / span 2; margin: 0; border-radius: 10px; }
+  .sala.compacta .placa { grid-column: 2; grid-row: 1; padding: 0; gap: 8px; }
+  .sala.compacta .placa .selo { width: 26px; height: 26px; border-radius: 8px; }
+  .sala.compacta .placa h3 { font-size: 15px; }
+  .sala.compacta .pilula { display: none; }
+  .sala.compacta .fatos { grid-column: 2; grid-row: 2; padding: 2px 0 0; grid-template-columns: 1fr; }
+  .sala.compacta .fatos .contas, .sala.compacta .crachas, .sala.compacta .feed { display: none; }
 
-  .fundo-painel { position: fixed; inset: 0; background: rgba(4, 5, 12, .55); backdrop-filter: blur(2px); z-index: 40; }
-  .painel { position: fixed; top: 10px; right: 10px; bottom: 10px; z-index: 50; width: min(500px, calc(100% - 20px)); background: var(--card); border: 1px solid var(--linha); border-radius: 24px; box-shadow: var(--sombra); overflow-y: auto; overscroll-behavior: contain; padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px calc(env(safe-area-inset-bottom, 0px) + 28px); }
-  @media (max-width: 640px) { .painel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; height: 86%; border-radius: 24px 24px 0 0; } }
+  /* ── painel de detalhes (vidro) ── */
+  .fundo-painel { position: fixed; inset: 0; background: rgba(4, 5, 10, .5); z-index: 40; transition: opacity .3s; }
+  @starting-style { .fundo-painel { opacity: 0; } }
+  .painel {
+    position: fixed; top: 12px; right: 12px; bottom: 12px; z-index: 50; width: min(520px, calc(100% - 24px));
+    background: rgba(22, 25, 37, .8); -webkit-backdrop-filter: blur(26px) saturate(160%); backdrop-filter: blur(26px) saturate(160%);
+    border: 1px solid var(--linha-forte); border-radius: 26px; box-shadow: 0 1px 0 rgba(255, 255, 255, .08) inset, 0 30px 80px -20px rgba(0, 0, 0, .8);
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable;
+    padding: calc(env(safe-area-inset-top, 0px) + 20px) 22px calc(env(safe-area-inset-bottom, 0px) + 30px);
+    transition: translate .6s var(--mola), opacity .25s;
+  }
+  @starting-style { .painel { translate: 40px 0; opacity: 0; } }
+  @media (max-width: 640px) {
+    .painel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; height: 88%; border-radius: 26px 26px 0 0; }
+    @starting-style { .painel { translate: 0 60px; opacity: 0; } }
+  }
+  @media (prefers-reduced-motion: reduce) { .painel, .fundo-painel { transition: none; } }
   .painel-topo { display: flex; align-items: flex-start; gap: 12px; }
-  .painel-topo .selo { width: 40px; height: 40px; font-size: 16px; border-radius: 13px; }
-  .painel-topo h2 { margin: 0; font-family: var(--f-titulo); font-weight: 700; font-size: 22px; line-height: 1.15; text-wrap: balance; }
-  .painel-topo .pilula { margin-top: 6px; }
-  .fechar { margin-left: auto; flex: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; background: var(--poco); border: 1px solid var(--linha); font-weight: 800; }
-  .fechar:hover { border-color: var(--ambar); }
-  .descricao { color: var(--suave); margin: 10px 0 0; max-width: 60ch; }
-  .secao { margin-top: 22px; }
-  .secao h3 { margin: 0 0 10px; font-family: var(--f-titulo); font-weight: 600; font-size: 15px; color: var(--suave); }
-  .tela-grande { position: relative; border-radius: 14px; overflow: hidden; background: #05060b; border: 6px solid #0c0e17; aspect-ratio: 16 / 9; box-shadow: 0 8px 24px rgba(0, 0, 0, .4); }
+  .painel-topo .selo { width: 44px; height: 44px; border-radius: 14px; }
+  .painel-topo .selo svg { width: 24px; height: 24px; }
+  .painel-topo h2 { margin: 0; font-family: var(--f-titulo); font-weight: 700; font-size: 26px; line-height: 1.1; letter-spacing: -.015em; font-variation-settings: 'opsz' 48; }
+  .painel-topo .pilula { margin-top: 7px; }
+  .fechar { margin-left: auto; flex: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; background: rgba(255, 255, 255, .06); border: 1px solid var(--linha); font-size: 15px; }
+  .fechar:hover { border-color: var(--linha-forte); }
+  .descricao { color: var(--suave); margin: 12px 0 0; max-width: 60ch; }
+  .secao { margin-top: 24px; }
+  .secao h3 { margin: 0 0 10px; font-size: 12px; font-weight: 600; color: var(--fraco); text-transform: uppercase; letter-spacing: .08em; }
+  .tela-grande { position: relative; border-radius: 16px; overflow: hidden; background: #05060b; border: 7px solid #07080d; aspect-ratio: 16 / 9; box-shadow: 0 0 0 1px var(--linha-forte), 0 16px 36px -12px rgba(0, 0, 0, .7); }
   .tela-grande iframe { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; border: 0; transform-origin: 0 0; background: #fff; }
   .tela-grande canvas { width: 100%; height: 100%; display: block; }
-  .tela-legenda { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; color: var(--fraco); font-size: 14px; }
-  .botao { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: var(--trab); color: #06131f; font-weight: 800; text-decoration: none; font-size: 14px; }
+  .tela-legenda { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-top: 10px; color: var(--fraco); font-size: 13px; }
+  .tela-legenda code { font-family: var(--f-mono); }
+  .botao { display: inline-flex; align-items: center; gap: 6px; padding: 7px 15px; border-radius: 999px; background: var(--texto); color: var(--fundo); font-weight: 600; text-decoration: none; font-size: 13.5px; }
+  .botao:hover { background: #fff; }
   .itens { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .item { background: var(--poco); border: 1px solid #2a3257; border-radius: 14px; padding: 10px 12px; display: grid; gap: 3px; min-width: 0; }
+  .item { background: rgba(0, 0, 0, .22); border: 1px solid var(--linha); border-radius: 16px; padding: 11px 13px; display: grid; gap: 3px; min-width: 0; }
   .item.com-sprite { grid-template-columns: 40px 1fr; column-gap: 12px; align-items: start; }
   .item.com-sprite canvas { width: 40px; height: 48px; grid-row: span 6; }
   .item .linha1 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
-  .item .nome { font-weight: 800; }
-  .item .meta { color: var(--fraco); font-size: 14px; }
-  .item .texto { color: var(--suave); font-size: 15px; overflow-wrap: anywhere; }
+  .item .nome { font-weight: 600; }
+  .item .meta { color: var(--fraco); font-size: 13px; }
+  .item .texto { color: var(--suave); font-size: 14px; overflow-wrap: anywhere; }
   .item .texto q { color: var(--texto); }
-  .item .agora b { color: var(--trab); font-weight: 800; }
-  .mono { font-family: var(--f-mono); font-size: 13px; line-height: 1.35; color: #c9d1f0; overflow-wrap: anywhere; }
-  .estado { font-family: var(--f-titulo); font-weight: 600; font-size: 11px; padding: 2px 8px; border-radius: 999px; color: #0b0d14; }
-  .estado.trabalhando { background: var(--trab); }
-  .estado.esperando { background: var(--espera); }
-  .estado.erro { background: var(--erro); }
-  .estado.terminou { background: var(--noar); }
-  .estado.parado { background: var(--desl); color: #eef0f8; }
-  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0; }
+  .item .agora b { color: var(--trab); font-weight: 600; }
+  .mono { font-family: var(--f-mono); font-size: 12.5px; line-height: 1.45; color: #c7cde6; overflow-wrap: anywhere; }
+  .estado { font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 999px; }
+  .estado.trabalhando { color: var(--trab); background: rgba(92, 200, 255, .12); }
+  .estado.esperando { color: var(--espera); background: rgba(255, 181, 71, .14); }
+  .estado.erro { color: var(--erro); background: rgba(255, 90, 110, .14); }
+  .estado.terminou { color: var(--noar); background: rgba(61, 220, 151, .12); }
+  .estado.parado { color: var(--suave); background: rgba(255, 255, 255, .06); }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 5px 14px; margin: 0; }
   .kv dt { color: var(--fraco); }
   .kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
-  .copiar { cursor: pointer; background: var(--card-2); border: 1px solid var(--linha); border-radius: 999px; font-size: 12px; padding: 2px 10px; margin-left: 8px; font-family: var(--f-texto); font-weight: 700; }
-  .dica { color: var(--suave); font-size: 14px; background: var(--poco); border: 1px dashed var(--linha); border-radius: 14px; padding: 10px 12px; }
-  .dica code { font-family: var(--f-mono); font-size: 13px; color: var(--texto); }
-  .nada { color: var(--fraco); font-size: 15px; margin: 0; }
+  .copiar { cursor: pointer; background: rgba(255, 255, 255, .06); border: 1px solid var(--linha); border-radius: 999px; font-size: 12px; padding: 2px 10px; margin-left: 8px; font-family: var(--f-texto); font-weight: 500; }
+  .dica { color: var(--suave); font-size: 13.5px; background: rgba(0, 0, 0, .2); border: 1px dashed var(--linha-forte); border-radius: 14px; padding: 10px 12px; }
+  .dica code { font-family: var(--f-mono); font-size: 12.5px; color: var(--texto); }
+  .nada { color: var(--fraco); font-size: 14px; margin: 0; }
 
-  .legenda { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
-  .legenda div { display: flex; gap: 12px; align-items: center; color: var(--suave); font-size: 15px; background: rgba(30, 36, 64, .6); border-radius: 16px; padding: 8px 12px; }
+  /* ── legenda, link para o celular, como ligar ── */
+  .legenda-caixa { background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--raio); padding: 14px 16px; box-shadow: var(--sombra); }
+  .legenda-caixa summary { cursor: pointer; font-family: var(--f-titulo); font-weight: 600; font-size: 16px; list-style: none; display: flex; align-items: center; gap: 10px; }
+  .legenda-caixa summary::-webkit-details-marker { display: none; }
+  .legenda-caixa summary::after { content: "Mostrar"; margin-left: auto; font-family: var(--f-texto); font-weight: 500; font-size: 13px; color: var(--fraco); }
+  .legenda-caixa[open] summary::after { content: "Esconder"; }
+  .legenda { margin-top: 12px; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
+  .legenda div { display: flex; gap: 12px; align-items: center; color: var(--suave); font-size: 14px; background: rgba(0, 0, 0, .18); border-radius: 14px; padding: 8px 12px; }
   .legenda canvas { width: 44px; height: 44px; flex: none; }
-  .como { background: var(--card); border: 1px solid var(--linha); border-radius: 20px; padding: 16px 20px; }
-  .como h2 { margin: 0 0 8px; font-family: var(--f-titulo); font-weight: 600; font-size: 18px; }
-  .como ol { margin: 0; padding-left: 22px; display: grid; gap: 4px; max-width: 78ch; color: var(--suave); }
-  .como code { font-family: var(--f-mono); font-size: 14px; color: var(--texto); }
-  .rodape-coleta { color: var(--fraco); font-size: 13px; }
+  .como, .remoto { background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--raio); padding: 16px 20px; box-shadow: var(--sombra); }
+  .como h2, .remoto h2 { margin: 0 0 8px; font-family: var(--f-titulo); font-weight: 600; font-size: 18px; }
+  .como ol { margin: 0; padding-left: 22px; display: grid; gap: 4px; max-width: 80ch; color: var(--suave); }
+  .como code, .remoto code { font-family: var(--f-mono); font-size: 13px; color: var(--texto); }
+  .rodape-coleta { color: var(--fraco); font-size: 12.5px; font-family: var(--f-mono); margin: 0; }
   .rodape-coleta a { color: var(--suave); }
-  .remoto { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; background: var(--card); border: 1px solid var(--linha); border-radius: 20px; padding: 16px 20px; }
-  .remoto canvas { width: 132px; height: 132px; border-radius: 12px; background: #fff; flex: none; }
-  .remoto h2 { margin: 0 0 6px; font-family: var(--f-titulo); font-weight: 600; font-size: 18px; }
-  .remoto p { margin: 0; color: var(--suave); max-width: 62ch; }
-  .remoto code { font-family: var(--f-mono); font-size: 14px; color: var(--texto); }
+  .remoto { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .remoto canvas { width: 132px; height: 132px; border-radius: 14px; background: #fff; flex: none; }
+  .remoto p { margin: 0; color: var(--suave); max-width: 64ch; }
   .remoto > div { flex: 1 1 260px; display: grid; gap: 8px; }
-  .remoto-link a { font-weight: 800; overflow-wrap: anywhere; }
+  .remoto-link a { font-weight: 600; overflow-wrap: anywhere; }
 
   /* ── celular ── */
-  @media (max-width: 640px) {
-    .hud { position: static; padding: 12px 16px 14px; gap: 10px; backdrop-filter: none; }
+  @media (max-width: 760px) {
+    .hud { position: relative; top: 0; margin: 10px 10px 0; padding: 10px; gap: 10px; border-radius: 20px; }
+    .faixa .longo, .zona-dica { display: none; }
+    .faixa .curto { display: inline; }
     .marca { flex: 1 1 0; gap: 10px; }
-    .logo { width: 36px; height: 36px; border-radius: 12px; }
-    .logo svg { width: 22px; height: 22px; }
-    .marca > div { min-width: 0; }
-    .marca h1 { font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .fonte { font-size: 13px; }
-    .fonte > span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .relogio { font-size: 19px; }
-    .hud-fim { gap: 10px; }
-    .sino { padding: 6px 9px; }
+    .logo { width: 34px; height: 34px; border-radius: 11px; }
+    .marca h1 { font-size: 17px; }
+    .fonte { font-size: 12px; }
+    .relogio { font-size: 17px; padding: 0 2px; }
+    .sino { height: 34px; padding: 0 10px; }
     .sino span { display: none; }
-    .placar { order: 3; width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-    .placar > div { min-width: 0; padding: 6px 8px 7px; border-radius: 12px; }
-    .placar dt { font-size: 11px; line-height: 1.15; }
-    .placar dd { font-size: 20px; }
-    .placar dd small { font-size: 12px; }
-    .conteudo { padding-block: 14px 36px; gap: 12px; }
-    .faixa { font-size: 14px; padding: 10px 12px; border-radius: 14px; gap: 8px; }
+    .placar { order: 3; width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .placar > div { padding: 6px 8px 7px; }
+    .placar dt { font-size: 10.5px; white-space: normal; line-height: 1.2; }
+    .placar dd { font-size: 19px; }
+    .conteudo { padding-inline: 12px; padding-block: 14px 40px; gap: 14px; }
+    .faixa { font-size: 13px; align-items: flex-start; }
     .chamados { display: grid; }
     .chamado { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; row-gap: 1px; border-radius: 16px; padding: 8px 12px 8px 8px; }
     .chamado b { grid-row: span 2; align-self: center; }
-    .chamado span { font-size: 13.5px; }
-    .predio { gap: 14px; }
+    .chamado span { font-size: 13px; }
+    .predio { gap: 12px; }
+    .zona h2, .zona summary { font-size: 18px; }
   }
 </style>
 
 <header class="hud">
   <div class="marca">
-    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="14" rx="3" fill="#1a1d2e"/><rect x="6" y="10" width="5" height="4" rx="1.2" fill="#ffc86b"/><rect x="13" y="10" width="5" height="4" rx="1.2" fill="#62c3ff"/><rect x="6" y="15.5" width="5" height="3" rx="1.2" fill="#4fd88a"/><rect x="13" y="15.5" width="5" height="3" rx="1.2" fill="#ffc86b"/><path d="M8 7V5a4 4 0 0 1 8 0v2" stroke="#1a1d2e" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="3.2" fill="#1b1d2b"/><rect x="7" y="6" width="4" height="3.4" rx="1" fill="#ffc46b"/><rect x="13" y="6" width="4" height="3.4" rx="1" fill="#5cc8ff"/><rect x="7" y="11" width="4" height="3.4" rx="1" fill="#3ddc97"/><rect x="13" y="11" width="4" height="3.4" rx="1" fill="#3a3f57"/><rect x="10" y="16.4" width="4" height="4.6" rx="1" fill="#ffc46b"/></svg></div>
     <div>
       <h1 id="titulo">Escritório do KzziN</h1>
       <p class="fonte demo" id="fonte"><span class="luz"></span><span id="fonte-texto">Conectando…</span></p>
@@ -227,7 +305,7 @@
   </div>
   <dl class="placar" aria-label="Resumo">
     <div class="p-noar"><dt>Apps no ar</dt><dd id="n-noar">–</dd></div>
-    <div class="p-trab"><dt>Agentes trabalhando</dt><dd id="n-trab">–</dd></div>
+    <div class="p-trab"><dt>Trabalhando</dt><dd id="n-trab">–</dd></div>
     <div class="p-chama" id="p-chama"><dt>Precisam de você</dt><dd id="n-chama">–</dd></div>
     <div><dt>CMDs abertos</dt><dd id="n-cmd">–</dd></div>
   </dl>
@@ -243,7 +321,7 @@
 <div class="conteudo">
   <div class="faixa" id="faixa-demo" hidden>
     <strong>Demonstração</strong>
-    <p>Estes projetos vieram das nossas conversas e o que aparece nos telões e nas mesas é de exemplo. No PC do trabalho, dê dois cliques em <code>iniciar-escritorio.bat</code> (pasta <code>escritorio</code>): os telões passam a mostrar cada app de verdade, ao vivo.</p>
+    <p><span class="longo">Projetos das nossas conversas, com telões e agentes de exemplo. No PC do trabalho, abra o <code>iniciar-escritorio.bat</code> para ver tudo ao vivo.</span><span class="curto">Dados de exemplo. No PC, abra o <code>iniciar-escritorio.bat</code>.</span></p>
   </div>
   <div class="faixa aviso" id="faixa-offline" hidden>
     <strong>Sem conexão</strong>
@@ -253,24 +331,31 @@
 
   <section class="chamados" id="chamados" aria-live="polite" aria-label="Precisam de você"></section>
 
-  <div class="barra">
-    <h2 id="contagem-salas">Salas</h2>
-    <div class="filtro" role="group" aria-label="Quais salas mostrar">
-      <button type="button" id="f-todas" aria-pressed="true">Todas as salas</button>
-      <button type="button" id="f-movimento" aria-pressed="false">Só com movimento</button>
+  <main class="andares" aria-label="Salas dos projetos">
+    <section class="zona" aria-labelledby="t-movimento">
+      <div class="zona-topo">
+        <h2 id="t-movimento">Em movimento <span class="num" id="n-movimento"></span></h2>
+        <p class="zona-dica">Salas que precisam de você ou têm gente trabalhando ficam maiores.</p>
+      </div>
+      <div class="predio" id="predio"></div>
+    </section>
+    <details class="zona zona-vazias" id="zona-vazias" open>
+      <summary>Salas vazias <span class="num" id="n-vazias"></span></summary>
+      <div class="predio-vazio" id="predio-vazio"></div>
+    </details>
+  </main>
+
+  <details class="legenda-caixa" id="legenda-caixa">
+    <summary>Como ler o escritório</summary>
+    <div class="legenda" aria-label="Legenda">
+      <div><canvas id="lg-tv" width="88" height="88"></canvas><span>Telão: o app do projeto rodando. Ao vivo quando o Escritório roda no seu PC.</span></div>
+      <div><canvas id="lg-rack" width="88" height="88"></canvas><span>Servidor: luz verde é app no ar, vermelha é app com erro.</span></div>
+      <div><canvas id="lg-robo" width="88" height="88"></canvas><span>Robô: agente de IA, com o nome no crachá da mesa.</span></div>
+      <div><canvas id="lg-voce" width="88" height="88"></canvas><span>Você: o projeto está aberto no seu editor.</span></div>
+      <div><canvas id="lg-cmd" width="88" height="88"></canvas><span>Quadro da esquerda: uma janelinha para cada CMD aberto.</span></div>
+      <div><canvas id="lg-balao" width="88" height="88"></canvas><span>Balão: lupa lendo, lápis editando, &gt;_ rodando comando, … pensando, ? esperando você, ! erro, ✓ terminou.</span></div>
     </div>
-  </div>
-
-  <main class="predio" id="predio" aria-label="Salas dos projetos"></main>
-
-  <section class="legenda" aria-label="Legenda">
-    <div><canvas id="lg-tv" width="88" height="88"></canvas><span>Telão: o app do projeto rodando. Ao vivo quando o Escritório roda no seu PC.</span></div>
-    <div><canvas id="lg-rack" width="88" height="88"></canvas><span>Servidor: luz verde é app no ar, vermelha é app com erro.</span></div>
-    <div><canvas id="lg-robo" width="88" height="88"></canvas><span>Robô: agente de IA, com o nome no crachá da mesa.</span></div>
-    <div><canvas id="lg-voce" width="88" height="88"></canvas><span>Você: o projeto está aberto no seu editor.</span></div>
-    <div><canvas id="lg-cmd" width="88" height="88"></canvas><span>Quadro da esquerda: uma janelinha para cada CMD aberto.</span></div>
-    <div><canvas id="lg-balao" width="88" height="88"></canvas><span>Balão: lupa lendo, lápis editando, &gt;_ rodando comando, … pensando, ? esperando você, ! erro, ✓ terminou.</span></div>
-  </section>
+  </details>
 
   <section class="remoto" id="remoto" hidden>
     <canvas id="remoto-qr" width="180" height="180" aria-label="QR code do link para o celular"></canvas>
@@ -321,10 +406,23 @@
   function ruido(a, b, c) { let h = Math.imul(a ^ 0x9e3779b9, 2654435761) ^ Math.imul(b + 0x85ebca6b, 2246822519) ^ Math.imul(c + 0xc2b2ae35, 3266489917); h ^= h >>> 15; h = Math.imul(h, 2246822507); h ^= h >>> 13; return (h >>> 0) / 4294967296; }
   const CORES_AUTO = ['#62c3ff', '#ffb86b', '#b58cff', '#7bd389', '#ff8fa3', '#f2d45c', '#5fd1c9', '#c3a1ff'];
   const corDa = (s) => s.cor || CORES_AUTO[hashStr(s.id) % CORES_AUTO.length];
-  function iniciais(nome) {
-    const p = String(nome || '?').replace(/[^\p{L}\p{N} ]/gu, ' ').split(/\s+/).filter((w) => w && !/^(de|da|do|dos|das|e)$/i.test(w));
-    return ((p[0] || '?')[0] + (p[1] ? p[1][0] : (p[0] || '')[1] || '')).toUpperCase();
-  }
+
+
+  const ICONE_SVG = {
+    totem: '<rect x="6" y="2.5" width="12" height="14" rx="2"/><path d="M9 20.5h6M12 16.5v4"/><rect x="9" y="6" width="6" height="4.5" rx="1"/><path d="M9.5 13h5"/>',
+    impressora: '<path d="M7 8V3.5h10V8"/><rect x="3.5" y="8" width="17" height="8.5" rx="2"/><rect x="7" y="13.5" width="10" height="7" rx="1"/><path d="M17 11h.01"/>',
+    notebook: '<rect x="4" y="4.5" width="16" height="11" rx="1.6"/><path d="M2 19.5h20"/>',
+    raspberry: '<path d="M12 7.5C11 5 8.8 4 7 4.6M12 7.5c1-2.5 3.2-3.5 5-2.9"/><circle cx="9.2" cy="11.2" r="2.4"/><circle cx="14.8" cy="11.2" r="2.4"/><circle cx="12" cy="15.4" r="2.4"/><circle cx="8.6" cy="16" r="1.9"/><circle cx="15.4" cy="16" r="1.9"/><circle cx="12" cy="19.4" r="1.7"/>',
+    camera: '<rect x="2.5" y="6.5" width="13" height="11" rx="2.2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/>',
+    imagem: '<rect x="3" y="3.5" width="18" height="17" rx="2.5"/><circle cx="9" cy="9.5" r="1.8"/><path d="m21 16-5-5L5 20.5"/>',
+    nuvem: '<path d="M17.5 19a4.5 4.5 0 0 0 .4-9A6.5 6.5 0 0 0 5.4 11.8 3.7 3.7 0 0 0 6.5 19Z"/>',
+    notch: '<rect x="2.5" y="4" width="19" height="15" rx="2.5"/><path d="M8.5 4v1.3a1.6 1.6 0 0 0 1.6 1.6h3.8a1.6 1.6 0 0 0 1.6-1.6V4"/>',
+    corpo: '<circle cx="12" cy="4.5" r="2"/><path d="M5 8.5c2.3.9 4.6 1.3 7 1.3s4.7-.4 7-1.3M12 9.8V14m0 0-2.8 6.5M12 14l2.8 6.5"/>',
+    pasta: '<path d="M3 7.5a2 2 0 0 1 2-2h4l2 2.2h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>',
+    codigo: '<path d="m8.5 8-4 4 4 4M15.5 8l4 4-4 4M13.5 5.5l-3 13"/>',
+    recepcao: '<path d="M4 18.5h16M5.5 18.5a6.5 6.5 0 0 1 13 0M12 9v3M10.2 9h3.6"/>',
+  };
+  const iconeDe = (s) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONE_SVG[s.tipo === 'recepcao' ? 'recepcao' : s.icone] || ICONE_SVG.pasta}</svg>`;
 
   let difRelogio = 0;
   function ha(ms) {
@@ -376,7 +474,7 @@
     gr.addColorStop(0, rgba(cor, a)); gr.addColorStop(1, rgba(cor, 0));
     g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
   }
-  function texto(g, t, x, y, tam, cor, peso = 700, alinhar = 'left', familia = 'Nunito') {
+  function texto(g, t, x, y, tam, cor, peso = 700, alinhar = 'left', familia = 'Geist') {
     g.font = `${peso} ${tam}px ${familia}, system-ui, sans-serif`;
     g.fillStyle = cor; g.textAlign = alinhar; g.textBaseline = 'middle';
     g.fillText(t, x, y);
@@ -423,7 +521,7 @@
       g.beginPath(); g.moveTo(252, 97); g.lineTo(306, 97); g.lineTo(270, 210); g.lineTo(200, 210); g.closePath(); g.fill();
     }
     // tapete com a cor do projeto
-    caixa(g, 10, 108, 232, 98, 20, rgba(mix(cor, '#1d1a2e', 0.45), 0.9));
+    caixa(g, 10, 108, 232, 98, 20, rgba(mix(cor, '#26222f', 0.64), 0.82));
     rr(g, 17, 115, 218, 84, 15); g.strokeStyle = rgba('#ffffff', 0.22); g.setLineDash([4, 4]); g.lineWidth = 1.2; g.stroke(); g.setLineDash([]);
 
     // janela com o céu da hora de verdade
@@ -611,7 +709,7 @@
       return;
     }
     if (tipo === 'comando') {
-      texto(g, '>', mx - 4, my + 0.5, 9, '#1f2937', 700, 'center', 'JetBrains Mono');
+      texto(g, '>', mx - 4, my + 0.5, 9, '#1f2937', 700, 'center', 'Geist Mono');
       if (reduzido || Math.floor(t * 3) % 2) caixa(g, mx - 0.5, my + 2.5, 5.5, 1.6, 0.5, '#1f2937');
       return;
     }
@@ -641,7 +739,7 @@
       g.beginPath(); g.moveTo(mx - 5, my); g.lineTo(mx - 1, my + 4); g.lineTo(mx + 6, my - 4); g.stroke();
     } else {
       const c = tipo === '?' ? '#e08a00' : tipo === '!' ? '#e2293b' : '#7a82a6';
-      texto(g, tipo, mx, my + 0.5, 13, c, 700, 'center', 'Fredoka');
+      texto(g, tipo, mx, my + 0.5, 13, c, 700, 'center', 'Bricolage Grotesque');
     }
   }
 
@@ -712,7 +810,7 @@
       g.fillStyle = 'rgba(255,255,255,0.12)'; g.fillRect(0, 0, 136, 11);
       texto(g, 'Autoatendimento · Tesouraria', 5, 5.8, 5, '#ffffff', 700);
       texto(g, 'Mensalidade de setembro', 6, 19, 5, '#cfe0ff', 600);
-      texto(g, 'R$ 489,90', 6, 29, 11, '#ffffff', 800, 'left', 'Fredoka');
+      texto(g, 'R$ 489,90', 6, 29, 11, '#ffffff', 800, 'left', 'Bricolage Grotesque');
       texto(g, 'RA 2024.0137 · Ana Souza', 6, 38, 4.5, '#cfe0ff', 600);
       const p = reduzido ? 1 : 0.8 + Math.sin(t * 3) * 0.2;
       caixa(g, 6, 47, 60, 16, 5, `rgba(34,197,94,${p})`);
@@ -726,7 +824,7 @@
       for (let i = 0; i < 5; i++) caixa(g, 6, 10 + i * 11, 10, 6, 2, i === 0 ? '#62c3ff' : 'rgba(255,255,255,0.25)');
       texto(g, s.nome, 27, 7, 6, '#1e2a47', 800);
       const kpis = s.nome.includes('KPAX') ? [['Dispositivos', '214'], ['Online', '198'], ['Alertas', '6']] : s.nome.includes('Lexmark') ? [['Impressoras', '38'], ['Toner baixo', '4'], ['Jobs hoje', '1.2k']] : [['Contratos', '87'], ['Páginas', '312k'], ['Faturado', 'R$ 48k']];
-      kpis.forEach(([k, v], i) => { caixa(g, 26 + i * 36, 13, 33, 17, 3, '#ffffff'); texto(g, k, 29 + i * 36, 18, 3.8, '#7a84a3', 700); texto(g, v, 29 + i * 36, 25, 7, i === 2 && !s.nome.includes('NDD') ? '#e2293b' : '#1e2a47', 800, 'left', 'Fredoka'); });
+      kpis.forEach(([k, v], i) => { caixa(g, 26 + i * 36, 13, 33, 17, 3, '#ffffff'); texto(g, k, 29 + i * 36, 18, 3.8, '#7a84a3', 700); texto(g, v, 29 + i * 36, 25, 7, i === 2 && !s.nome.includes('NDD') ? '#e2293b' : '#1e2a47', 800, 'left', 'Bricolage Grotesque'); });
       caixa(g, 26, 34, 58, 34, 3, '#ffffff');
       for (let i = 0; i < 8; i++) { const h = 6 + ruido(3, i, reduzido ? 0 : Math.floor(t / 1.5)) * 20; caixa(g, 30 + i * 6.6, 64 - h, 4, h, 1.2, i === 7 ? '#62c3ff' : '#9fb4e8'); }
       caixa(g, 88, 34, 44, 34, 3, '#ffffff');
@@ -734,7 +832,7 @@
     },
     notebook(g, t) {
       g.fillStyle = '#0f172a'; g.fillRect(0, 0, 136, 72);
-      texto(g, 'Easy Inventory', 6, 7, 6.5, '#ffffff', 800, 'left', 'Fredoka');
+      texto(g, 'Easy Inventory', 6, 7, 6.5, '#ffffff', 800, 'left', 'Bricolage Grotesque');
       texto(g, '128 notebooks · 124 online', 70, 7, 4.5, '#94a3b8', 700);
       for (let i = 0; i < 12; i++) {
         const x = 6 + (i % 6) * 21.5, y = 16 + Math.floor(i / 6) * 27;
@@ -747,10 +845,10 @@
     },
     raspberry(g, t) {
       g.fillStyle = '#0b0f0c'; g.fillRect(0, 0, 136, 72);
-      texto(g, 'pi@raspberrypi: ~ $ htop', 5, 6, 5, '#8ff0a4', 500, 'left', 'JetBrains Mono');
+      texto(g, 'pi@raspberrypi: ~ $ htop', 5, 6, 5, '#8ff0a4', 500, 'left', 'Geist Mono');
       for (let i = 0; i < 4; i++) {
         const v = 0.25 + ruido(5, i, reduzido ? 0 : Math.floor(t * 2)) * 0.7;
-        texto(g, String(i), 5, 16 + i * 7, 4.5, '#62c3ff', 500, 'left', 'JetBrains Mono');
+        texto(g, String(i), 5, 16 + i * 7, 4.5, '#62c3ff', 500, 'left', 'Geist Mono');
         caixa(g, 11, 14 + i * 7, 70, 4, 1, '#1a2a1d');
         caixa(g, 11, 14 + i * 7, 70 * v, 4, 1, v > 0.8 ? '#ef4444' : v > 0.6 ? '#f59e0b' : '#22c55e');
       }
@@ -852,7 +950,7 @@
       const gr = g.createLinearGradient(0, 0, 0, 72); gr.addColorStop(0, '#2a2140'); gr.addColorStop(1, '#141024');
       g.fillStyle = gr; g.fillRect(0, 0, 136, 72);
       const agora = new Date();
-      texto(g, agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), 68, 30, 22, '#ffc86b', 600, 'center', 'Fredoka');
+      texto(g, agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), 68, 30, 22, '#ffc86b', 600, 'center', 'Bricolage Grotesque');
       texto(g, agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }), 68, 50, 5.5, '#e9e3ff', 700, 'center');
       texto(g, 'Bem-vindo ao escritório', 68, 61, 4.5, 'rgba(233,227,255,0.6)', 600, 'center');
     },
@@ -878,7 +976,7 @@
       const q = reduzido ? 0 : Math.floor(t * 12);
       for (let i = 0; i < 260; i++) { const v = Math.floor(ruido(i, q, 3) * 90); g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(ruido(i, q, 1) * 136, ruido(i, q, 2) * 72, 2, 1.2); }
       caixa(g, 38, 27, 60, 18, 5, 'rgba(0,0,0,0.75)');
-      texto(g, 'FORA DO AR', 68, 36.5, 7, '#ffffff', 800, 'center', 'Fredoka');
+      texto(g, 'FORA DO AR', 68, 36.5, 7, '#ffffff', 800, 'center', 'Bricolage Grotesque');
     } else {
       const gr = g.createLinearGradient(0, 0, 136, 72); gr.addColorStop(0, '#11131b'); gr.addColorStop(1, '#07080c');
       g.fillStyle = gr; g.fillRect(0, 0, 136, 72);
@@ -900,7 +998,6 @@
   let dados = null;
   let modo = 'iniciando'; // vivo | demo | offline
   const salasDom = new Map();
-  let filtro = lerGuardado('escritorio.filtro') === 'movimento' ? 'movimento' : 'todas';
   let aberta = null;
 
   function ocupantes(s) {
@@ -960,13 +1057,15 @@
     el.innerHTML = `
       <header class="placa"><span class="selo"></span><h3></h3><span class="auto"></span><span class="pilula"></span></header>
       <div class="cena"><canvas aria-hidden="true"></canvas><div class="crachas"></div></div>
-      <footer class="fatos"><span class="app"></span><span class="contas"></span></footer>`;
+      <ul class="feed" aria-label="O que está acontecendo"></ul>
+      <footer class="fatos"><span class="app"><i class="ponto"></i><span class="app-texto"></span></span><span class="contas"></span><time class="quando"></time></footer>`;
     const abrir = () => abrirPainel(s.id);
     el.addEventListener('click', abrir);
     el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } });
     const d = {
       el, cena: $('.cena', el), cv: $('.cena canvas', el), selo: $('.selo', el), nome: $('h3', el), auto: $('.auto', el),
-      pil: $('.pilula', el), crachas: $('.crachas', el), app: $('.fatos .app', el), contas: $('.fatos .contas', el),
+      pil: $('.pilula', el), crachas: $('.crachas', el), app: $('.fatos .app-texto', el), appPonto: $('.fatos .ponto', el),
+      contas: $('.fatos .contas', el), quando: $('.fatos .quando', el), feed: $('.feed', el), chaveFeed: '', chaveIcone: '',
       visivel: true, sala: s, cache: null, chaveCrachas: '', iframe: null, urlVivo: '',
     };
     d.g = d.cv.getContext('2d');
@@ -1005,8 +1104,10 @@
     d.sala = s;
     const cor = corDa(s);
     d.selo.style.setProperty('--c', cor);
-    d.selo.textContent = s.tipo === 'recepcao' ? '★' : iniciais(s.nome);
+    if (d.chaveIcone !== s.icone + s.tipo) { d.selo.innerHTML = iconeDe(s); d.chaveIcone = s.icone + s.tipo; }
     d.nome.textContent = s.nome;
+    d.nome.title = s.nome;
+    d.nome.classList.toggle('longo', s.nome.length > 17);
     d.auto.textContent = s.tipo === 'auto' ? 'nova' : '';
     d.auto.hidden = s.tipo !== 'auto';
     d.auto.title = s.tipo === 'auto' ? s.descricao : '';
@@ -1016,11 +1117,32 @@
     const ch = chamando(s);
     d.el.classList.toggle('chama', !!ch);
     d.el.classList.toggle('erro', ch === 'erro');
-    d.app.textContent = s.app ? (s.app.estado === 'sem-app' ? (acesa(s) ? 'Sem app rodando' : 'Ninguém por aqui') : 'App ' + s.app.resumo) : '';
+    const e = s.app ? s.app.estado : 'sem-app';
+    const vazia = !temMovimento(s);
+    d.app.textContent = vazia ? (s.ultimaAtividade ? `Última atividade ${ha(s.ultimaAtividade)}` : 'Sem movimento')
+      : e === 'sem-app' ? 'Sem app rodando' : 'App ' + s.app.resumo;
     d.app.title = d.app.textContent;
+    d.appPonto.className = 'ponto ' + (e === 'no-ar' ? 'terminou' : e === 'erro' ? 'erro' : '');
     const ags = (s.agentes || []).filter((a) => a.visivel).length;
     const cmds = (s.terminais || []).length;
     d.contas.innerHTML = `<span><b>${cmds}</b> CMD${cmds === 1 ? '' : 's'}</span><span><b>${ags}</b> agente${ags === 1 ? '' : 's'}</span>`;
+    const ultimo = Math.max(0, ...(s.agentes || []).filter((a) => a.visivel).map((a) => a.ultimaAtividade || 0));
+    d.quando.textContent = ultimo ? ha(ultimo) : '';
+    // o que cada um está fazendo (aparece nas salas em destaque)
+    const linhas = ocupantes(s).slice(0, 4).map((o) => {
+      if (o.tipo === 'voce') return { cls: 'voce', nome: 'Você', txt: 'no ' + ((s.voce[0] && s.voce[0].onde) || 'editor'), t: '' };
+      const a = o.agente;
+      const txt = a.estado === 'trabalhando' ? (fraseAtividade(a) || 'Trabalhando')
+        : a.estado === 'esperando' ? 'Esperando você' + (a.alvo ? ': ' + a.alvo : '')
+          : a.estado === 'erro' ? (a.resposta || 'Parou com erro')
+            : a.estado === 'terminou' ? 'Terminou: ' + a.titulo : a.titulo;
+      return { cls: a.estado, nome: a.persona, txt, t: ha(a.ultimaAtividade) };
+    });
+    const chaveFeed = JSON.stringify(linhas);
+    if (chaveFeed !== d.chaveFeed) {
+      d.chaveFeed = chaveFeed;
+      d.feed.innerHTML = linhas.map((l) => `<li><i class="ponto ${esc(l.cls)}"></i><b>${esc(l.nome)}</b><span title="${esc(l.txt)}">${esc(l.txt)}</span><time>${esc(l.t)}</time></li>`).join('');
+    }
     if (!antes || acesa(antes) !== acesa(s) || corDa(antes) !== cor) d.cache = null;
     conferirIframe(d);
 
@@ -1108,6 +1230,7 @@
   }
 
   // ─────────────── aplicar os dados ───────────────
+  let ultimoLayout = '';
   function aplicar(d) {
     dados = d;
     if (d.agora) difRelogio = d.agora - Date.now();
@@ -1116,26 +1239,48 @@
 
     const salas = d.salas || [];
     const vistos = new Set();
-    const predio = $('#predio');
-    let visiveis = 0;
-    salas.forEach((s, i) => {
+    for (const s of salas) {
       vistos.add(s.id);
       const dom = salasDom.get(s.id) || criarSalaDom(s);
       atualizarSalaDom(dom, s);
-      const mostrar = filtro === 'todas' || temMovimento(s);
-      dom.el.hidden = !mostrar;
-      if (mostrar) visiveis++;
-      const ref = predio.children[i];
-      if (ref !== dom.el) predio.insertBefore(dom.el, ref || null);
-      if (!dom.cv.width) dimensionar(dom);
-    });
+    }
     for (const [id, dom] of salasDom) if (!vistos.has(id)) { dom.el.remove(); salasDom.delete(id); if (observador) observador.unobserve(dom.el); if (medidor) medidor.unobserve(dom.cena); }
-    let vazio = $('.vazio-filtro', predio);
-    if (!visiveis) {
-      if (!vazio) { vazio = document.createElement('p'); vazio.className = 'vazio-filtro'; predio.appendChild(vazio); }
-      vazio.textContent = 'Nenhuma sala com movimento agora. Todo mundo foi tomar café.';
-    } else if (vazio) vazio.remove();
-    $('#contagem-salas').textContent = `${salas.length} salas · ${salas.filter(acesa).length} com a luz acesa`;
+
+    // Em movimento (grade bento) e vazias (lista compacta). As que precisam de você
+    // ou têm duas pessoas ou mais ganham destaque, no máximo três.
+    const movimento = salas.filter(temMovimento);
+    const vazias = salas.filter((s) => !temMovimento(s));
+    const prioridade = (s) => (chamando(s) === 'erro' ? 30 : chamando(s) ? 20 : 0) + ocupantes(s).length * 2 + (s.voce && s.voce.length ? 3 : 0);
+    const destaque = new Set(movimento.filter((s) => chamando(s) || ocupantes(s).length >= 2)
+      .sort((a, b) => prioridade(b) - prioridade(a)).slice(0, 3).map((s) => s.id));
+    const layout = JSON.stringify([movimento.map((s) => s.id + (destaque.has(s.id) ? '*' : '')), vazias.map((s) => s.id)]);
+    const organizar = () => {
+      const colocar = (lista, alvo) => lista.forEach((s, i) => {
+        const dom = salasDom.get(s.id);
+        dom.el.classList.toggle('destaque', destaque.has(s.id));
+        dom.el.classList.toggle('compacta', alvo.id === 'predio-vazio');
+        dom.el.style.viewTransitionName = 'sala-' + s.id;
+        const ref = alvo.children[i];
+        if (ref !== dom.el) alvo.insertBefore(dom.el, ref || null);
+      });
+      colocar(movimento, $('#predio'));
+      colocar(vazias, $('#predio-vazio'));
+      let vazio = $('.vazio-filtro', $('#predio'));
+      if (!movimento.length) {
+        if (!vazio) { vazio = document.createElement('p'); vazio.className = 'vazio-filtro'; $('#predio').appendChild(vazio); }
+        vazio.textContent = 'Nenhuma sala com movimento agora. Todo mundo foi tomar café.';
+      } else if (vazio) vazio.remove();
+      $('#zona-vazias').hidden = !vazias.length;
+      for (const s of salas) { const dom = salasDom.get(s.id); if (dom) dimensionar(dom); }
+    };
+    if (layout !== ultimoLayout) {
+      const primeira = !ultimoLayout;
+      ultimoLayout = layout;
+      if (!primeira && !reduzido && document.startViewTransition && !document.hidden) document.startViewTransition(organizar);
+      else organizar();
+    }
+    $('#n-movimento').textContent = movimento.length;
+    $('#n-vazias').textContent = vazias.length;
 
     const comApp = salas.filter((s) => s.app && s.app.estado !== 'sem-app');
     $('#n-noar').innerHTML = `${comApp.filter((s) => s.app.estado === 'no-ar').length}<small>/ ${comApp.length}</small>`;
@@ -1226,7 +1371,7 @@
       p.innerHTML = '<div class="painel-fixo"></div><div class="painel-corpo"></div>';
       ultimoPainel = '';
       const f = $('.painel-fixo', p);
-      f.innerHTML = `<div class="painel-topo"><span class="selo" style="--c:${esc(corDa(s))}">${s.tipo === 'recepcao' ? '★' : esc(iniciais(s.nome))}</span><div><h2 id="painel-titulo">${esc(s.nome)}</h2><span class="pilula ${pc}">${pt}</span></div><button type="button" class="fechar" aria-label="Fechar">✕</button></div>
+      f.innerHTML = `<div class="painel-topo"><span class="selo" style="--c:${esc(corDa(s))}">${iconeDe(s)}</span><div><h2 id="painel-titulo">${esc(s.nome)}</h2><span class="pilula ${pc}">${pt}</span></div><button type="button" class="fechar" aria-label="Fechar">✕</button></div>
         ${s.descricao ? `<p class="descricao">${esc(s.descricao)}</p>` : ''}
         <section class="secao"><h3>Telão</h3><div class="tela-grande">${urlVivo ? `<iframe src="${esc(urlVivo)}" title="${esc(s.nome)} ao vivo" referrerpolicy="no-referrer"></iframe>` : '<canvas></canvas>'}</div>
         <div class="tela-legenda">${urlVivo ? '<span>Ao vivo, do seu PC.</span>' : modo === 'demo' ? '<span>Exemplo. No seu PC aparece o app de verdade.</span>' : app.tela && !app.tela.embutivel ? '<span>Este app não deixa ser mostrado dentro de outra página.</span>' : '<span>Coloque a <code>url</code> do app no projetos.json para ver ele aqui.</span>'}${urlApp ? `<a class="botao" href="${esc(urlApp)}" target="_blank" rel="noopener">Abrir o app ↗</a>` : ''}</div></section>`;
@@ -1550,17 +1695,12 @@
     novos.slice(0, 3).forEach(([chave, v]) => notificar({ ...v, chave }));
   }
 
-  // ─────────────── filtro ───────────────
-  function ajustarFiltro(f) {
-    filtro = f;
-    guardar('escritorio.filtro', f);
-    $('#f-todas').setAttribute('aria-pressed', String(f === 'todas'));
-    $('#f-movimento').setAttribute('aria-pressed', String(f === 'movimento'));
-    if (dados) aplicar(dados);
+  // ─────────────── o que fica aberto (lembrado por navegador) ───────────────
+  for (const [id, padrao] of [['zona-vazias', '1'], ['legenda-caixa', '0']]) {
+    const el = $('#' + id);
+    el.open = (lerGuardado('escritorio.' + id) ?? padrao) === '1';
+    el.addEventListener('toggle', () => guardar('escritorio.' + id, el.open ? '1' : '0'));
   }
-  $('#f-todas').addEventListener('click', () => ajustarFiltro('todas'));
-  $('#f-movimento').addEventListener('click', () => ajustarFiltro('movimento'));
-  ajustarFiltro(filtro);
 
   // ─────────────── busca dos dados ───────────────
   const podeTerServidor = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|\[::1\])/.test(location.hostname) || location.hostname.endsWith('.local') || (location.port && location.port !== '443');
