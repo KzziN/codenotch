@@ -1,6 +1,6 @@
 # Escritório
 
-Um escritório em pixel art onde cada projeto tem a sua sala. Olhando de cima dá
+Um escritório desenhado, visto de cima, onde cada projeto tem a sua sala. Olhando de cima dá
 para ver, sala por sala:
 
 - **o app rodando de verdade**: cada sala tem um telão grande que mostra o app
@@ -9,17 +9,23 @@ para ver, sala por sala:
   mostram um desenho no lugar;
 - **se o app está no ar**: o servidor (rack) no canto acende verde quando o app
   responde e vermelho quando está rodando com erro;
-- **quantos CMDs estão abertos**: cada CMD, PowerShell ou terminal vira um
-  quadrinho no telão da parede;
-- **quais agentes estão trabalhando**: cada agente de IA (Claude Code, Claude
-  Desktop, Codex…) é um robô sentado numa mesa, com o nome no crachá. O balão em
-  cima da cabeça diz o que ele está fazendo: `…` trabalhando, `?` esperando
-  você, `!` erro (ou limite de uso), `✓` terminou;
+- **quantos CMDs estão abertos**: cada CMD, PowerShell ou terminal vira uma
+  janelinha no quadro da parede, à esquerda;
+- **quais agentes estão trabalhando, e no quê**: cada agente de IA (Claude Code,
+  Claude Desktop, Codex…) é um robô sentado numa mesa, com o nome no crachá. O
+  balão em cima da cabeça mostra o que ele está fazendo: lupa lendo arquivos,
+  lápis editando, `>_` rodando um comando, globo pesquisando na internet, `…`
+  pensando; `?` esperando você, `!` erro (ou limite de uso), `✓` terminou.
+  Clicando na sala aparece a frase inteira, como "Editando: pagamento.js";
 - **onde você está**: se o projeto está aberto no VS Code (ou Cursor, Android
   Studio…), você aparece na primeira mesa.
 
-A luz da sala acende quando tem alguém lá dentro ou um CMD aberto. A lâmpada em
-cima da porta pisca amarelo ou vermelho quando a sala precisa de você.
+A luz da sala acende quando tem alguém lá dentro ou um CMD aberto. A borda da
+sala pisca amarelo ou vermelho quando ela precisa de você.
+
+**Avisos:** o botão com o sino, no alto da página, liga um som e uma
+notificação para quando um agente começa a esperar você, dá erro ou termina, e
+para quando um app sai do ar. A escolha fica guardada no navegador.
 
 Clique numa sala para ver tudo com detalhe: endereço e portas do app, cada CMD
 (com o que está rodando dentro), cada agente com o que você pediu e a última
@@ -77,7 +83,10 @@ Configurações gerais no topo do arquivo:
 | `minutosAgenteParado` | `45` | Por quanto tempo um agente que terminou continua sentado na mesa. |
 | `diasDeHistorico` | `14` | Até quantos dias atrás olhar as conversas. |
 | `lerPastaDosCmds` | `false` | Veja abaixo. |
-| `acessoNaRede` | `false` | Veja abaixo. |
+| `acessoNaRede` | `false` | Abre também para a rede local (Wi-Fi do trabalho). Veja abaixo. |
+| `senha` | vazia | Senha para abrir o Escritório de fora deste PC. Veja abaixo. |
+| `linkRemoto` | `false` | Abre um link do Cloudflare para ver de qualquer lugar. Precisa de `senha`. |
+| `enderecosPermitidos` | `[]` | Endereços seus que podem abrir o Escritório, como `"escritorio.c2a.com.br"` ou `"*.trycloudflare.com"`. |
 
 ### De qual projeto é cada CMD?
 
@@ -94,15 +103,35 @@ pela TI, combine com eles antes de ligar.
 
 ### Ver do celular
 
-Com `"acessoNaRede": true` (ou rodando `node servidor.js --rede`), o Escritório
-também responde na rede local, e a janela mostra o endereço
-(`http://192.168.x.x:7777`). Só ligue em rede confiável: a página mostra
-nomes de pastas e linhas de comando (senhas e tokens nelas são escondidos com
-`***`).
+**Na mesma rede Wi-Fi:** com `"acessoNaRede": true` (ou rodando
+`node servidor.js --rede`), a janela mostra o endereço (`http://192.168.x.x:7777`).
+
+**De qualquer lugar (4G, casa):** coloque uma senha e ligue o link:
+
+```json
+"senha": "uma frase que só você sabe",
+"linkRemoto": true,
+```
+
+Ao abrir, o Escritório liga um túnel do Cloudflare (precisa do `cloudflared`
+instalado, o mesmo dos seus links) e mostra na página, no PC, um QR code com o
+link `https://….trycloudflare.com`. Aponte o celular, digite a senha e pronto:
+o celular fica conectado por 30 dias. O link também fica salvo em
+`link-remoto.txt`.
+
+Esse link muda toda vez que o Escritório reinicia. Para um endereço fixo, crie um
+túnel com nome no painel do Cloudflare apontando para `http://localhost:7777`
+(como os dos outros projetos), coloque o endereço em `enderecosPermitidos`, e
+deixe `linkRemoto` desligado.
+
+Sem senha, o Escritório recusa qualquer acesso que venha de fora. Muitas senhas
+erradas seguidas bloqueiam aquele endereço por 15 minutos. De fora, os telões
+mostram os desenhos em vez dos apps: um app em `localhost` só existe no PC.
+Nas linhas de comando mostradas, senhas e tokens aparecem como `***`.
 
 ## O que ele lê (e o que não faz)
 
-Só leitura, tudo local, nada sai do PC:
+Só leitura, tudo local. Nada sai do PC, a não ser que você ligue o `linkRemoto`:
 
 - a lista de processos, janelas abertas, portas em uso e serviços, pelo
   PowerShell (`coletor.ps1`, que você pode abrir e ler);
@@ -130,3 +159,12 @@ sempre é um pedido de permissão (mas pode ser um comando demorado).
   estiver, troque `"porta"` no `projetos.json`.
 - **Uma sala não aparece**: confira as `palavras` ou coloque o caminho em
   `pastas`. Para testar sem abrir o navegador: `node servidor.js --json`.
+- **O telão mostra um desenho, e não o app**: coloque a `url` do app no
+  projeto. Alguns apps proíbem aparecer dentro de outra página; nesses, o
+  painel da sala avisa e tem o botão **Abrir o app**.
+
+## Testes
+
+Para quem for mexer no código: `node --test` (dentro da pasta `escritorio`) roda
+os testes do servidor, e `pwsh -File testes/checar-coletor.ps1` confere o
+`coletor.ps1` (sintaxe, compilação e uma volta com dados falsos).

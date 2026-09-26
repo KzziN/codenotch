@@ -47,7 +47,8 @@
   .logo { width: 42px; height: 42px; border-radius: 14px; flex: none; background: linear-gradient(135deg, #ffc86b, #ff8a5c); display: grid; place-items: center; box-shadow: 0 6px 18px rgba(255, 150, 90, .35); }
   .logo svg { width: 26px; height: 26px; }
   .marca h1 { margin: 0; font-family: var(--f-titulo); font-weight: 700; font-size: 22px; line-height: 1.1; text-wrap: balance; }
-  .fonte { margin: 2px 0 0; color: var(--suave); font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .fonte { margin: 2px 0 0; color: var(--suave); font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .fonte > span:last-child { min-width: 0; }
   .fonte .luz { width: 9px; height: 9px; border-radius: 50%; background: var(--noar); box-shadow: 0 0 10px var(--noar); flex: none; }
   .fonte.demo .luz { background: var(--ambar); box-shadow: 0 0 10px var(--ambar); }
   .fonte.offline .luz { background: var(--erro); box-shadow: 0 0 10px var(--erro); }
@@ -60,6 +61,11 @@
   .placar .p-trab dd { color: var(--trab); }
   .placar .p-chama.tem { border-color: var(--espera); background: rgba(255, 179, 71, .08); }
   .placar .p-chama.tem dd { color: var(--espera); }
+  .hud-fim { display: flex; align-items: center; gap: 14px; }
+  .sino { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; padding: 7px 12px; border-radius: 999px; background: var(--poco); border: 1px solid var(--linha); color: var(--suave); font-size: 13px; font-weight: 800; }
+  .sino svg { width: 17px; height: 17px; }
+  .sino[aria-pressed="true"] { color: #1d1405; background: var(--ambar); border-color: var(--ambar); }
+  .sino:hover { border-color: var(--ambar); }
   .relogio { font-family: var(--f-titulo); font-weight: 600; font-size: 24px; color: var(--ambar); font-variant-numeric: tabular-nums; }
 
   .conteudo { padding-inline: 16px; padding-block: 18px 44px; max-width: 1720px; margin: 0 auto; display: grid; gap: 16px; }
@@ -149,6 +155,7 @@
   .item .meta { color: var(--fraco); font-size: 14px; }
   .item .texto { color: var(--suave); font-size: 15px; overflow-wrap: anywhere; }
   .item .texto q { color: var(--texto); }
+  .item .agora b { color: var(--trab); font-weight: 800; }
   .mono { font-family: var(--f-mono); font-size: 13px; line-height: 1.35; color: #c9d1f0; overflow-wrap: anywhere; }
   .estado { font-family: var(--f-titulo); font-weight: 600; font-size: 11px; padding: 2px 8px; border-radius: 999px; color: #0b0d14; }
   .estado.trabalhando { background: var(--trab); }
@@ -172,6 +179,42 @@
   .como ol { margin: 0; padding-left: 22px; display: grid; gap: 4px; max-width: 78ch; color: var(--suave); }
   .como code { font-family: var(--f-mono); font-size: 14px; color: var(--texto); }
   .rodape-coleta { color: var(--fraco); font-size: 13px; }
+  .rodape-coleta a { color: var(--suave); }
+  .remoto { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; background: var(--card); border: 1px solid var(--linha); border-radius: 20px; padding: 16px 20px; }
+  .remoto canvas { width: 132px; height: 132px; border-radius: 12px; background: #fff; flex: none; }
+  .remoto h2 { margin: 0 0 6px; font-family: var(--f-titulo); font-weight: 600; font-size: 18px; }
+  .remoto p { margin: 0; color: var(--suave); max-width: 62ch; }
+  .remoto code { font-family: var(--f-mono); font-size: 14px; color: var(--texto); }
+  .remoto > div { flex: 1 1 260px; display: grid; gap: 8px; }
+  .remoto-link a { font-weight: 800; overflow-wrap: anywhere; }
+
+  /* ── celular ── */
+  @media (max-width: 640px) {
+    .hud { position: static; padding: 12px 16px 14px; gap: 10px; backdrop-filter: none; }
+    .marca { flex: 1 1 0; gap: 10px; }
+    .logo { width: 36px; height: 36px; border-radius: 12px; }
+    .logo svg { width: 22px; height: 22px; }
+    .marca > div { min-width: 0; }
+    .marca h1 { font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fonte { font-size: 13px; }
+    .fonte > span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .relogio { font-size: 19px; }
+    .hud-fim { gap: 10px; }
+    .sino { padding: 6px 9px; }
+    .sino span { display: none; }
+    .placar { order: 3; width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+    .placar > div { min-width: 0; padding: 6px 8px 7px; border-radius: 12px; }
+    .placar dt { font-size: 11px; line-height: 1.15; }
+    .placar dd { font-size: 20px; }
+    .placar dd small { font-size: 12px; }
+    .conteudo { padding-block: 14px 36px; gap: 12px; }
+    .faixa { font-size: 14px; padding: 10px 12px; border-radius: 14px; gap: 8px; }
+    .chamados { display: grid; }
+    .chamado { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; row-gap: 1px; border-radius: 16px; padding: 8px 12px 8px 8px; }
+    .chamado b { grid-row: span 2; align-self: center; }
+    .chamado span { font-size: 13.5px; }
+    .predio { gap: 14px; }
+  }
 </style>
 
 <header class="hud">
@@ -188,7 +231,13 @@
     <div class="p-chama" id="p-chama"><dt>Precisam de você</dt><dd id="n-chama">–</dd></div>
     <div><dt>CMDs abertos</dt><dd id="n-cmd">–</dd></div>
   </dl>
-  <div class="relogio" id="relogio" aria-label="Hora">--:--</div>
+  <div class="hud-fim">
+    <button type="button" class="sino" id="sino" aria-pressed="false" title="Tocar um som e mostrar uma notificação quando um agente precisar de você, der erro ou terminar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6v3.6L4.3 15.4A1 1 0 0 0 5.2 17h13.6a1 1 0 0 0 .9-1.6L18 12.6V9a6 6 0 0 0-6-6Z" fill="currentColor"/><path d="M9.5 19a2.5 2.5 0 0 0 5 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <span id="sino-texto">Avisos desligados</span>
+    </button>
+    <div class="relogio" id="relogio" aria-label="Hora">--:--</div>
+  </div>
 </header>
 
 <div class="conteudo">
@@ -220,8 +269,18 @@
     <div><canvas id="lg-robo" width="88" height="88"></canvas><span>Robô: agente de IA, com o nome no crachá da mesa.</span></div>
     <div><canvas id="lg-voce" width="88" height="88"></canvas><span>Você: o projeto está aberto no seu editor.</span></div>
     <div><canvas id="lg-cmd" width="88" height="88"></canvas><span>Quadro da esquerda: uma janelinha para cada CMD aberto.</span></div>
-    <div><canvas id="lg-balao" width="88" height="88"></canvas><span>Balão: … trabalhando, ? esperando você, ! erro, ✓ terminou.</span></div>
+    <div><canvas id="lg-balao" width="88" height="88"></canvas><span>Balão: lupa lendo, lápis editando, &gt;_ rodando comando, … pensando, ? esperando você, ! erro, ✓ terminou.</span></div>
   </section>
+
+  <section class="remoto" id="remoto" hidden>
+    <canvas id="remoto-qr" width="180" height="180" aria-label="QR code do link para o celular"></canvas>
+    <div>
+      <h2>Abrir no celular, de qualquer lugar</h2>
+      <p>Aponte a câmera do celular para o código ou use o link abaixo. Ele pede a senha do <code>projetos.json</code>. O link muda toda vez que o Escritório reinicia.</p>
+      <p class="remoto-link"><a id="remoto-a" href="#" target="_blank" rel="noopener"></a><button type="button" class="copiar" id="remoto-copiar">Copiar</button></p>
+    </div>
+  </section>
+  <p class="rodape-coleta" id="rodape-vivo" hidden></p>
 
   <section class="como" id="como">
     <h2>Como ligar no PC do trabalho</h2>
@@ -230,7 +289,6 @@
       <li>Dê dois cliques em <code>iniciar-escritorio.bat</code>. O navegador abre em <code>http://localhost:7777</code>.</li>
       <li>Os projetos em que você já usou o Claude Code ou o Codex aparecem sozinhos. Para o telão mostrar o app e testar se ele responde, coloque a <code>url</code> de cada um no <code>projetos.json</code>.</li>
     </ol>
-    <p class="rodape-coleta" id="rodape-coleta"></p>
   </section>
 </div>
 
@@ -282,6 +340,12 @@
   }
   const duracao = (ms) => (ms ? ha(ms).replace('há ', '') : '');
 
+  const ATIVIDADE_TEXTO = { lendo: 'Lendo', escrevendo: 'Editando', comando: 'Rodando', pesquisando: 'Pesquisando', delegando: 'Passou uma parte para um subagente', planejando: 'Planejando os próximos passos', ferramenta: 'Usando', pensando: 'Pensando', respondendo: 'Escrevendo a resposta' };
+  function fraseAtividade(a) {
+    const base = ATIVIDADE_TEXTO[a.atividade] || '';
+    if (!base) return '';
+    return a.alvo && !['pensando', 'respondendo', 'planejando'].includes(a.atividade) ? `${base}: ${a.alvo}` : base;
+  }
   const ESTADO_NOME = { trabalhando: 'Trabalhando', esperando: 'Esperando você', erro: 'Erro', terminou: 'Terminou', parado: 'Parado' };
   const ESTADO_COR = { trabalhando: '#62c3ff', esperando: '#ffb347', erro: '#ff5c70', terminou: '#4fd88a', parado: '#8a92b8' };
   const FERRAMENTA_COR = { 'Claude Code': '#e07b56', 'Claude Desktop': '#e8a06a', Codex: '#4cc3a0', Gemini: '#6f9dff', 'Cursor Agent': '#b9bccb', Aider: '#9ad06a', OpenCode: '#f2c14e' };
@@ -442,7 +506,7 @@
   }
 
   // ── robôs e pessoas ──
-  function robo(g, cx, y, ferramenta, estado, t, semente) {
+  function robo(g, cx, y, ferramenta, estado, t, semente, atividade = '') {
     const corpo = FERRAMENTA_COR[ferramenta] || '#b9bccb';
     const trab = estado === 'trabalhando';
     const bob = trab && !reduzido ? Math.sin(t * 6 + semente) * 0.8 : 0;
@@ -475,8 +539,10 @@
     } else if (piscar || estado === 'parado') {
       caixa(g, cx - 7, hy + 10, 4, 1.4, 0.7, olho); caixa(g, cx + 3, hy + 10, 4, 1.4, 0.7, olho);
     } else {
-      const oy = trab ? hy + 9 : hy + 7;
-      caixa(g, cx - 7, oy, 4, 4.5, 2, olho); caixa(g, cx + 3, oy, 4, 4.5, 2, olho);
+      // lendo: os olhos correm de um lado para o outro; pensando: olham para cima
+      const ox = trab && atividade === 'lendo' && !reduzido ? Math.round(Math.sin(t * 3 + semente) * 2) : 0;
+      const oy = !trab ? hy + 7 : atividade === 'pensando' ? hy + 5.5 : hy + 9;
+      caixa(g, cx - 7 + ox, oy, 4, 4.5, 2, olho); caixa(g, cx + 3 + ox, oy, 4, 4.5, 2, olho);
       brilho(g, cx, oy + 2, 12, olho, 0.18);
     }
     // antena com a luz do estado
@@ -528,6 +594,46 @@
     caixa(g, x, by, 24, 17, 8.5, '#ffffff');
     g.beginPath(); g.moveTo(x + 4, by + 13); g.lineTo(x - 2, by + 21); g.lineTo(x + 10, by + 16); g.closePath(); g.fillStyle = '#ffffff'; g.fill();
     const mx = x + 12, my = by + 8.5;
+    const tinta = '#3b8fe0';
+    g.strokeStyle = tinta; g.fillStyle = tinta; g.lineWidth = 1.6; g.lineCap = 'round'; g.lineJoin = 'round';
+    if (tipo === 'lendo') {
+      const dx = reduzido ? 0 : Math.sin(t * 3) * 1.2;
+      g.beginPath(); g.arc(mx - 1.5 + dx, my - 1, 3.4, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.moveTo(mx + 1 + dx, my + 1.5); g.lineTo(mx + 4.5 + dx, my + 5); g.stroke();
+      return;
+    }
+    if (tipo === 'escrevendo') {
+      const dy = reduzido ? 0 : Math.sin(t * 10) * 0.8;
+      g.save(); g.translate(mx, my + dy); g.rotate(-Math.PI / 4);
+      caixa(g, -6, -1.8, 9, 3.6, 1, '#f2b035'); caixa(g, 3, -1.8, 2, 3.6, 0.5, '#e87b8b');
+      g.beginPath(); g.moveTo(-6, -1.8); g.lineTo(-8.5, 0); g.lineTo(-6, 1.8); g.closePath(); g.fillStyle = '#3b3b4f'; g.fill();
+      g.restore();
+      return;
+    }
+    if (tipo === 'comando') {
+      texto(g, '>', mx - 4, my + 0.5, 9, '#1f2937', 700, 'center', 'JetBrains Mono');
+      if (reduzido || Math.floor(t * 3) % 2) caixa(g, mx - 0.5, my + 2.5, 5.5, 1.6, 0.5, '#1f2937');
+      return;
+    }
+    if (tipo === 'pesquisando') {
+      g.beginPath(); g.arc(mx, my, 4.6, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.ellipse(mx, my, 2, 4.6, 0, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.moveTo(mx - 4.6, my); g.lineTo(mx + 4.6, my); g.stroke();
+      return;
+    }
+    if (tipo === 'delegando') {
+      for (const [dx, c] of [[-3.5, '#e07b56'], [3.5, '#4cc3a0']]) { bola(g, mx + dx, my - 2.5, 2.2, c); caixa(g, mx + dx - 2.8, my + 0.5, 5.6, 4, 2, c); }
+      return;
+    }
+    if (tipo === 'planejando') {
+      for (let i = 0; i < 3; i++) { caixa(g, mx - 6, my - 4.5 + i * 3.5, 2.2, 2.2, 0.5, i === 0 ? '#1f9d55' : '#c5cbe0'); caixa(g, mx - 2.5, my - 4 + i * 3.5, 8 - i * 1.5, 1.2, 0.6, '#9aa3c4'); }
+      return;
+    }
+    if (tipo === 'ferramenta') {
+      g.beginPath(); g.arc(mx, my, 2.6, 0, Math.PI * 2); g.stroke();
+      for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3 + (reduzido ? 0 : t); bola(g, mx + Math.cos(a) * 4.6, my + Math.sin(a) * 4.6, 1.1, tinta); }
+      return;
+    }
     if (tipo === '...') {
       for (let i = 0; i < 3; i++) bola(g, mx - 6 + i * 6, my + (reduzido ? 0 : Math.sin(t * 8 - i * 0.9) * 1.6), 2, '#3b8fe0');
     } else if (tipo === 'ok') {
@@ -820,9 +926,15 @@
   }
   const temMovimento = (s) => acesa(s) || (s.app && ['no-ar', 'erro'].includes(s.app.estado)) || (s.agentes || []).some((a) => a.visivel);
   // no PC, o telão mostra o app de verdade num iframe
+  // Um endereço "localhost" só funciona no próprio PC; do celular, o telão mostra o desenho.
+  const vendoDoPc = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  const soNoPc = (u) => /^https?:\/\/(localhost|127\.|0\.0\.0\.0|\[::1\])/i.test(u);
   function telaAoVivo(s) {
     const tl = s.app && s.app.tela;
-    return modo === 'vivo' && tl && tl.embutivel && /^https?:\/\//i.test(tl.url) && ['no-ar', 'erro'].includes(s.app.estado) ? tl.url : '';
+    if (!(modo === 'vivo' && tl && tl.embutivel && /^https?:\/\//i.test(tl.url) && ['no-ar', 'erro'].includes(s.app.estado))) return '';
+    if (soNoPc(tl.url) && !vendoDoPc) return '';
+    if (location.protocol === 'https:' && /^http:/i.test(tl.url)) return '';
+    return tl.url;
   }
 
   const observador = 'IntersectionObserver' in window ? new IntersectionObserver((ents) => {
@@ -973,7 +1085,7 @@
     oc.forEach((o, i) => {
       const [cx, y] = mesas[i];
       g.fillStyle = 'rgba(0,0,0,0.14)'; g.beginPath(); g.ellipse(cx, y - 2, 16 * escala, 4, 0, 0, Math.PI * 2); g.fill();
-      topos[i] = naMesa(cx, y, () => (o.tipo === 'voce' ? pessoa(g, cx, y, t) : robo(g, cx, y, o.agente.ferramenta, o.agente.estado, t, semente + i * 3)));
+      topos[i] = naMesa(cx, y, () => (o.tipo === 'voce' ? pessoa(g, cx, y, t) : robo(g, cx, y, o.agente.ferramenta, o.agente.estado, t, semente + i * 3, o.agente.atividade)));
     });
     g.setTransform(1, 0, 0, 1, 0, 0);
     g.drawImage(c.frente, 0, 0);
@@ -987,7 +1099,8 @@
     oc.forEach((o, i) => {
       if (o.tipo === 'voce') return;
       const st = o.agente.estado;
-      const tipo = st === 'trabalhando' ? '...' : st === 'esperando' ? '?' : st === 'erro' ? '!' : st === 'terminou' ? 'ok' : 'z';
+      const ativ = o.agente.atividade;
+      const tipo = st === 'trabalhando' ? (ativ && ativ !== 'pensando' && ativ !== 'respondendo' ? ativ : '...') : st === 'esperando' ? '?' : st === 'erro' ? '!' : st === 'terminou' ? 'ok' : 'z';
       balao(g, mesas[i][0] + 12 * escala, topos[i] - 16, tipo, t);
     });
     const e = s.app ? s.app.estado : '';
@@ -1030,7 +1143,7 @@
     $('#n-trab').textContent = todos.filter((x) => x.a.estado === 'trabalhando').length;
     const chamados = [];
     for (const { a, s } of todos) {
-      if (a.estado === 'esperando') chamados.push({ tipo: 'espera', s, rotulo: 'Esperando', texto: `${a.persona} está esperando você`, sub: `${s.nome} · ${ha(a.ultimaAtividade)}` });
+      if (a.estado === 'esperando') chamados.push({ tipo: 'espera', s, rotulo: 'Esperando', texto: `${a.persona} está esperando você`, sub: `${s.nome} · ${a.alvo ? a.alvo + ' · ' : ''}${ha(a.ultimaAtividade)}` });
       if (a.estado === 'erro') chamados.push({ tipo: 'erro', s, rotulo: 'Erro', texto: `${a.persona} parou com erro`, sub: `${s.nome} · ${(a.resposta || ha(a.ultimaAtividade)).slice(0, 70)}` });
     }
     for (const s of salas) if (s.app && s.app.estado === 'erro') chamados.push({ tipo: 'erro', s, rotulo: 'App', texto: `${s.nome} com problema`, sub: s.app.resumo });
@@ -1056,9 +1169,12 @@
     $('#faixa-demo').hidden = modo !== 'demo';
     $('#faixa-offline').hidden = modo !== 'offline';
     $('#como').hidden = modo === 'vivo';
+    $('#rodape-vivo').hidden = modo !== 'vivo';
     atualizarFonte();
     const c = d.coleta || {};
-    $('#rodape-coleta').textContent = modo === 'vivo' ? `Coleta: ${c.modo || '?'} · ${c.ms || 0} ms · janelas ${c.temJanelas ? 'sim' : 'não'} · pasta dos CMDs ${c.temPastas ? 'sim' : 'não'}` : '';
+    $('#rodape-vivo').innerHTML = modo === 'vivo' ? esc(`Coleta: ${c.modo || '?'} · ${c.ms || 0} ms · janelas ${c.temJanelas ? 'sim' : 'não'} · pasta dos CMDs ${c.temPastas ? 'sim' : 'não'}`) + (vendoDoPc ? '' : ' · <a href="sair">Sair</a>') : '';
+    mostrarRemoto(d.linkRemoto || '');
+    verificarAvisos(salas);
     if (aberta) renderPainel();
   }
 
@@ -1156,7 +1272,8 @@
           <div class="linha1"><span class="nome">${esc(a.persona)}</span><span class="estado ${esc(a.estado)}">${ESTADO_NOME[a.estado] || esc(a.estado)}</span><span class="meta">${ha(a.ultimaAtividade)}${a.visivel ? '' : ' · fora da sala'}</span></div>
           <div class="texto">${esc(a.titulo)}</div>
           ${a.ultimaMsg ? `<div class="texto">Você pediu: <q>${esc(a.ultimaMsg)}</q></div>` : ''}
-          ${a.estado === 'esperando' ? `<div class="texto">Parado${a.ferramentaEmUso ? ' no ' + esc(a.ferramentaEmUso) : ''} ${esc(duracao(a.ultimaAtividade))}: deve estar pedindo sua permissão ou uma resposta.</div>` : ''}
+          ${a.estado === 'trabalhando' && fraseAtividade(a) ? `<div class="texto agora">Agora: <b>${esc(fraseAtividade(a))}</b></div>` : ''}
+          ${a.estado === 'esperando' ? `<div class="texto">Parado ${esc(duracao(a.ultimaAtividade))}${a.alvo ? ` em <q>${esc(a.alvo)}</q>` : a.ferramentaEmUso ? ' no ' + esc(a.ferramentaEmUso) : ''}: deve estar pedindo sua permissão ou uma resposta.</div>` : ''}
           ${a.resposta && a.estado !== 'trabalhando' ? `<div class="texto">Última resposta: <q>${esc(a.resposta)}</q></div>` : ''}
           <div class="meta">${esc(meta)}</div></li>`);
       });
@@ -1257,6 +1374,8 @@
     });
     const liaEstado = ciclo(48, [[26, 'trabalhando'], [8, 'esperando'], [14, 'trabalhando']]);
     const sofiaEstado = ciclo(70, [[40, 'trabalhando'], [30, 'terminou']]);
+    const liaFaz = [['lendo', 'pagamento.js'], ['escrevendo', 'pagamento.js'], ['comando', 'npm test'], ['pensando', '']][Math.floor(seg / 6) % 4];
+    const cadoFaz = [['pesquisando', 'docs do Node.js'], ['escrevendo', 'index.html'], ['planejando', '']][Math.floor(seg / 8) % 3];
     const cmdsKpax = seg % 90 < 45 ? 1 : 0;
     return {
       versao: 1, agora: t, titulo: 'Escritório do KzziN', maquina: 'PC-TRABALHO', plataforma: 'win32',
@@ -1269,8 +1388,8 @@
           processos: [{ pid: 4188, programa: 'node.exe', cmd: 'node C:\\Projetos\\totem-faculdade\\node_modules\\vite\\bin\\vite.js', desde: t - 94 * min, portas: [5173] }],
           voce: [{ onde: 'VS Code', detalhe: 'pagamento.js - totem-faculdade - Visual Studio Code' }],
           agentes: [
-            ag('a1', 'Lia', 'Claude Code', 'Pix no totem', liaEstado, { ultimaMsg: 'arruma o pagamento via pix no totem', ferramentaEmUso: 'Bash' }),
-            ag('a2', 'Vini', 'Claude Code', 'Gerar o APK de release', 'esperando', { ultimaMsg: 'gera o apk de release sem gradle', ferramentaEmUso: 'Bash' }),
+            ag('a1', 'Lia', 'Claude Code', 'Pix no totem', liaEstado, { ultimaMsg: 'arruma o pagamento via pix no totem', atividade: liaFaz[0], alvo: liaFaz[1] }),
+            ag('a2', 'Vini', 'Claude Code', 'Gerar o APK de release', 'esperando', { ultimaMsg: 'gera o apk de release sem gradle', ferramentaEmUso: 'Bash', alvo: 'Gerar o APK com aapt2 e d8' }),
           ],
         }),
         sala('ndd', 'NDD Financeiro', 'impressora', '#7bd389', 'Modernização do NDD e financeiro, consulta NDD × base local, portal mps.nddprint.com.', {
@@ -1285,7 +1404,7 @@
           processos: [{ pid: 7140, programa: 'node.exe', cmd: 'node C:\\Projetos\\kpax-mcp\\dist\\index.js', desde: t - 30 * min, portas: [3100] }],
           agentes: [
             ag('a4', 'Pedro', 'Claude Code', 'Auditoria do sistema KPAX', 'erro', { resposta: "You've hit your session limit · resets 6:30pm", ultimaAtividade: t - 25 * min }),
-            ag('a5', 'Hugo', 'Claude Code', 'KPAX dispositivos', cmdsKpax ? 'esperando' : 'terminou', { ultimaMsg: 'lista todos os dispositivos do kpax', ferramentaEmUso: 'mcp__kpax__authenticate' }),
+            ag('a5', 'Hugo', 'Claude Code', 'KPAX dispositivos', cmdsKpax ? 'esperando' : 'terminou', { ultimaMsg: 'lista todos os dispositivos do kpax', ferramentaEmUso: 'mcp__kpax__authenticate', alvo: 'kpax: authenticate' }),
           ],
         }),
         sala('inventory', 'Easy Inventory', 'notebook', '#b58cff', 'Monitoração dos notebooks da empresa.', {
@@ -1298,7 +1417,7 @@
         sala('meet', 'Meet Interno C2A', 'camera', '#3fd0c9', 'Sala de reunião por vídeo interna e gratuita, com a marca da C2A.', {
           app: app('no-ar', 'respondeu 200 em 64 ms', { url: 'https://localhost:8443', portas: [{ porta: 8443, programa: 'node.exe' }] }),
           terminais: [term(9001, 'CMD no VS Code', 'npm start', { rodando: ['node.exe'] })],
-          agentes: [ag('a6', 'Sofia', 'Claude Code', 'Sala com o logo da C2A', sofiaEstado, { ultimaMsg: 'coloca o logo da C2A na sala', resposta: 'Logo aplicado na tela de entrada e no rodapé.' })],
+          agentes: [ag('a6', 'Sofia', 'Claude Code', 'Sala com o logo da C2A', sofiaEstado, { ultimaMsg: 'coloca o logo da C2A na sala', atividade: 'escrevendo', alvo: 'sala.html', resposta: 'Logo aplicado na tela de entrada e no rodapé.' })],
         }),
         sala('lexmark', 'Lexmark', 'impressora', '#e8e46a', 'Desenvolvimento nas impressoras Lexmark (autorização e integração MPS).', {}),
         sala('imagens', 'IA de Imagens', 'imagem', '#f7a8e0', 'ComfyUI: vídeo vertical da criatura voadora e gerador de imagens próprio.', {
@@ -1319,7 +1438,7 @@
         { ...sala('auto-escritorio', 'escritorio', 'pasta', '', 'Descoberta sozinha pelas conversas com os agentes.', {
           pastas: ['C:\\Projetos\\escritorio'],
           terminais: [term(9900, 'CMD no Windows Terminal', '', { agente: 'Claude Code', desde: t - 20 * min })],
-          agentes: [ag('a8', 'Cadu', 'Claude Code', 'Escritório com todos os projetos', 'trabalhando', { ultimaMsg: 'faça um escritório com todos os meus projetos' })],
+          agentes: [ag('a8', 'Cadu', 'Claude Code', 'Escritório com todos os projetos', 'trabalhando', { ultimaMsg: 'faça um escritório com todos os meus projetos', atividade: cadoFaz[0], alvo: cadoFaz[1] })],
         }), tipo: 'auto' },
         { ...sala('recepcao', 'Recepção', 'recepcao', '#c9a86a', 'Conversas soltas, sessões do Claude Desktop e CMDs que não são de nenhum projeto.', {
           terminais: [term(1234, 'CMD', 'C:\\WINDOWS\\system32\\cmd.exe', { desde: t - 3 * 60 * min })],
@@ -1327,6 +1446,108 @@
         }), tipo: 'recepcao' },
       ],
     };
+  }
+
+  // ─────────────── link para o celular ───────────────
+  let linkMostrado = '';
+  function mostrarRemoto(link) {
+    const box = $('#remoto');
+    const ver = modo === 'vivo' && vendoDoPc && /^https:\/\//.test(link);
+    box.hidden = !ver;
+    if (!ver || link === linkMostrado) return;
+    linkMostrado = link;
+    $('#remoto-a').href = link; $('#remoto-a').textContent = link;
+    const desenhar = () => {
+      try {
+        const qr = window.qrcode(0, 'M'); qr.addData(link); qr.make();
+        const n = qr.getModuleCount(), cv = $('#remoto-qr'), g = cv.getContext('2d');
+        const c = Math.floor((cv.width - 16) / n), o = Math.floor((cv.width - c * n) / 2);
+        g.fillStyle = '#ffffff'; g.fillRect(0, 0, cv.width, cv.height); g.fillStyle = '#10131d';
+        for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (qr.isDark(i, j)) g.fillRect(o + j * c, o + i * c, c, c);
+      } catch { $('#remoto-qr').hidden = true; }
+    };
+    if (window.qrcode) desenhar();
+    else {
+      const sc = document.createElement('script');
+      sc.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
+      sc.onload = desenhar; sc.onerror = () => { $('#remoto-qr').hidden = true; };
+      document.head.appendChild(sc);
+    }
+  }
+  $('#remoto-copiar').addEventListener('click', async (e) => {
+    const b = e.currentTarget;
+    try { await navigator.clipboard.writeText(linkMostrado); b.textContent = 'Copiado'; }
+    catch { const sel = getSelection(); const rg = document.createRange(); rg.selectNodeContents($('#remoto-a')); sel.removeAllRanges(); sel.addRange(rg); b.textContent = 'Selecionado'; }
+  });
+
+  // ─────────────── avisos (som e notificação) ───────────────
+  let avisosLigados = lerGuardado('escritorio.avisos') === '1';
+  let conhecidos = null;
+  let audio = null;
+  function acordarAudio() {
+    try {
+      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === 'suspended') audio.resume();
+    } catch {}
+  }
+  function tocar(tipo) {
+    if (!audio) return;
+    const notas = tipo === 'erro' ? [523, 392] : tipo === 'espera' ? [784, 1047] : [659, 880];
+    const vol = tipo === 'fim' ? 0.05 : 0.09;
+    notas.forEach((f, i) => {
+      const o = audio.createOscillator(), gn = audio.createGain();
+      const t0 = audio.currentTime + i * 0.16;
+      o.type = 'sine'; o.frequency.value = f;
+      gn.gain.setValueAtTime(0, t0); gn.gain.linearRampToValueAtTime(vol, t0 + 0.02); gn.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.35);
+      o.connect(gn).connect(audio.destination); o.start(t0); o.stop(t0 + 0.4);
+    });
+  }
+  function notificar(av) {
+    try {
+      if (!('Notification' in window) || Notification.permission !== 'granted' || !document.hidden) return;
+      const n = new Notification(av.titulo, { body: av.corpo, tag: av.chave });
+      n.onclick = () => { window.focus(); abrirPainel(av.sala); n.close(); };
+    } catch {}
+  }
+  function mostrarSino() {
+    const b = $('#sino');
+    b.setAttribute('aria-pressed', String(avisosLigados));
+    $('#sino-texto').textContent = avisosLigados ? 'Avisos ligados' : 'Avisos desligados';
+  }
+  $('#sino').addEventListener('click', async () => {
+    avisosLigados = !avisosLigados;
+    guardar('escritorio.avisos', avisosLigados ? '1' : '0');
+    mostrarSino();
+    if (avisosLigados) {
+      acordarAudio();
+      tocar('fim');
+      try { if ('Notification' in window && Notification.permission === 'default') await Notification.requestPermission(); } catch {}
+    }
+  });
+  // o navegador só deixa tocar som depois de um toque na página
+  document.addEventListener('pointerdown', () => { if (avisosLigados) acordarAudio(); }, { once: true });
+  mostrarSino();
+
+  function verificarAvisos(salas) {
+    const atuais = new Map();
+    for (const s of salas) {
+      for (const a of s.agentes || []) {
+        if (!a.visivel) continue;
+        const onde = `${s.nome}${a.alvo ? ' · ' + a.alvo : ''}`;
+        if (a.estado === 'esperando') atuais.set('e:' + a.id, { tipo: 'espera', titulo: `${a.persona} está esperando você`, corpo: onde, sala: s.id });
+        else if (a.estado === 'erro') atuais.set('x:' + a.id, { tipo: 'erro', titulo: `${a.persona} parou com erro`, corpo: `${s.nome} · ${a.resposta || ''}`, sala: s.id });
+        else if (a.estado === 'terminou') atuais.set('t:' + a.id, { tipo: 'fim', titulo: `${a.persona} terminou`, corpo: `${s.nome} · ${a.titulo}`, sala: s.id });
+      }
+      if (s.app && (s.app.estado === 'erro' || s.app.estado === 'desligado')) {
+        atuais.set(`a:${s.id}:${s.app.estado}`, { tipo: 'erro', titulo: `${s.nome}: ${s.app.estado === 'erro' ? 'app com erro' : 'app fora do ar'}`, corpo: s.app.resumo, sala: s.id });
+      }
+    }
+    const novos = conhecidos ? [...atuais].filter(([k]) => !conhecidos.has(k)) : [];
+    conhecidos = new Set(atuais.keys());
+    if (!avisosLigados || !novos.length) return;
+    const pior = novos.some(([, v]) => v.tipo === 'erro') ? 'erro' : novos.some(([, v]) => v.tipo === 'espera') ? 'espera' : 'fim';
+    tocar(pior);
+    novos.slice(0, 3).forEach(([chave, v]) => notificar({ ...v, chave }));
   }
 
   // ─────────────── filtro ───────────────
@@ -1354,6 +1575,7 @@
         const timer = setTimeout(() => ctl.abort(), 4000);
         const r = await fetch('api/status', { cache: 'no-store', signal: ctl.signal });
         clearTimeout(timer);
+        if (r.status === 401) { location.assign('entrar'); return; }
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const d = await r.json();
         if (!d || !Array.isArray(d.salas)) throw new Error('resposta inesperada');
@@ -1416,8 +1638,8 @@
     recorte('#lg-rack', 258, 56, 48, 88, (g) => { caixa(g, 262, 62, 40, 78, 7, '#1d2233'); caixa(g, 262, 60, 40, 9, 5, '#394059'); for (let i = 0; i < 5; i++) caixa(g, 266, 73 + i * 13, 32, 10, 3, '#2b3148'); rack(g, 'no-ar', 1, 3); });
     recorte('#lg-robo', 100, 80, 40, 64, (g) => robo(g, 120, 140, 'Claude Code', 'trabalhando', 0, 1));
     recorte('#lg-voce', 100, 94, 40, 50, (g) => pessoa(g, 120, 140, 0));
-    recorte('#lg-cmd', 12, 20, 60, 40, (g) => quadroCmds(g, [{ pid: 1, programa: 'CMD' }], 0));
-    recorte('#lg-balao', 0, 0, 28, 24, (g) => balao(g, 3, 2, '?', 0));
+    recorte('#lg-cmd', 8, 6, 78, 72, (g) => { caixa(g, 8, 8, 76, 70, 8, '#1a1d2c'); caixa(g, 11, 11, 70, 64, 6, '#262b40'); quadroCmds(g, [{ pid: 1, programa: 'CMD' }, { pid: 2, programa: 'PowerShell' }], 0); });
+    recorte('#lg-balao', 0, 0, 28, 24, (g) => balao(g, 3, 2, 'lendo', 0));
   }
 
   buscar();

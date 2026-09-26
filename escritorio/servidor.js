@@ -91,6 +91,9 @@ const PADRAO = {
   titulo: 'Escritório',
   porta: 7777,
   acessoNaRede: false,
+  senha: '',
+  linkRemoto: false,
+  enderecosPermitidos: [],
   descobrirProjetos: true,
   lerPastaDosCmds: false,
   minutosAgenteParado: 45,
@@ -112,6 +115,8 @@ function lista(v) {
 
 function normalizarConfig(c) {
   const cfg = { ...PADRAO, ...c };
+  cfg.senha = String(cfg.senha || '');
+  cfg.enderecosPermitidos = lista(c.enderecosPermitidos).map((h) => String(h).toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, ''));
   const vistos = new Set();
   cfg.projetos = lista(c.projetos).filter((p) => p && p.nome && !p.oculto).map((p) => {
     let id = slug(p.id || p.nome);
@@ -211,6 +216,8 @@ const sis = {
   em: 0,
   erro: null,
 };
+
+const dadosDoWindows = () => sis.modo === 'powershell' || sis.modo === 'tasklist';
 
 function registrar(procs, janelas, portas, servicos, extra) {
   const mapa = new Map();
@@ -474,6 +481,35 @@ function pegarTitulo(info, v) {
   if (typeof v.slug === 'string' && v.slug) info.slug = v.slug;
 }
 
+// O que o agente está fazendo, pelo nome da ferramenta que ele chamou por último.
+function atividadeDaFerramenta(nome) {
+  const n = String(nome || '');
+  if (/^(Read|Grep|Glob|LS|NotebookRead)$/.test(n)) return 'lendo';
+  if (/^(Edit|Write|MultiEdit|NotebookEdit|apply_patch)$/.test(n)) return 'escrevendo';
+  if (/^(Bash|BashOutput|KillBash|KillShell|PowerShell|Monitor|shell|exec_command|local_shell|write_stdin)$/.test(n)) return 'comando';
+  if (/^(WebFetch|WebSearch|web_search|web_search_call)$/.test(n) || /search|fetch|browse/i.test(n)) return 'pesquisando';
+  if (/^(Task|Agent|spawn_agent)$/.test(n)) return 'delegando';
+  if (/^(TodoWrite|update_plan)$/.test(n)) return 'planejando';
+  return n ? 'ferramenta' : 'pensando';
+}
+
+// Uma frase curta sobre o alvo da ferramenta: o arquivo, o comando, a busca.
+function detalheDaFerramenta(nome, input) {
+  const i = input && typeof input === 'object' ? input : {};
+  const arquivo = i.file_path || i.notebook_path || i.path;
+  switch (atividadeDaFerramenta(nome)) {
+    case 'lendo': return arquivo ? base(arquivo) : i.pattern ? `"${curto(i.pattern, 40)}"` : '';
+    case 'escrevendo': return arquivo ? base(arquivo) : '';
+    case 'comando': return curto(i.description || limparCmd(Array.isArray(i.command) ? i.command.slice(-1)[0] : i.command || i.cmd || ''), 70);
+    case 'pesquisando': return curto(i.query || (i.url ? String(i.url).replace(/^https?:\/\//, '').split('/')[0] : ''), 60);
+    case 'delegando': return curto(i.description || '', 60);
+    default: {
+      const m = /^mcp__([^_]+(?:_[^_]+)*)__(.+)$/.exec(String(nome || ''));
+      return m ? `${m[1]}: ${m[2]}` : curto(String(nome || ''), 40);
+    }
+  }
+}
+
 function ultimoClaude(v) {
   const ts = Date.parse(v.timestamp) || 0;
   if (v.type === 'user') {
@@ -490,6 +526,7 @@ function ultimoClaude(v) {
     tipo: ferramenta ? 'ferramenta' : 'texto',
     ts,
     ferramenta: ferramenta ? String(ferramenta.name || '') : '',
+    alvo: ferramenta ? detalheDaFerramenta(ferramenta.name, ferramenta.input) : '',
     parada: (v.message && v.message.stop_reason) || '',
     erro,
     texto: curto(texto, 180),
@@ -642,7 +679,20 @@ function lerCodex(arquivo, st, antes) {
     }
     if (!info.ultimo) {
       const passo = passoCodex(v);
-      if (passo) info.ultimo = { tipo: passo, ts: Date.parse(v.timestamp) || st.mtimeMs };
+      if (passo) {
+        info.ultimo = { tipo: passo, ts: Date.parse(v.timestamp) || st.mtimeMs };
+        if (passo === 'ferramenta') {
+          const nome = p.name || (p.type === 'local_shell_call' ? 'local_shell' : p.type) || '';
+          let args = p.arguments || p.input || (p.action ? { command: p.action.command } : {});
+          if (typeof args === 'string') { try { args = JSON.parse(args); } catch { args = { command: args }; } }
+          if (nome === 'apply_patch') {
+            const m = /\*\*\* (?:Update|Add) File: (.+)/.exec(typeof p.input === 'string' ? p.input : JSON.stringify(args));
+            args = m ? { file_path: m[1].trim() } : {};
+          }
+          info.ultimo.ferramenta = nome;
+          info.ultimo.alvo = detalheDaFerramenta(nome, args);
+        }
+      }
     }
     if (info.ultimo && info.modelo && info.ultimoPromptLido) break;
   }
@@ -696,6 +746,10 @@ function lerAgentes(cfg) {
       ultimaMsg: info.ultimoPromptRegistrado || info.ultimoPrompt || '',
       resposta: info.ultimo && info.ultimo.texto ? info.ultimo.texto : '',
       ferramentaEmUso: info.ultimo && info.ultimo.ferramenta ? info.ultimo.ferramenta : '',
+      atividade: estado !== 'trabalhando' ? '' : !info.ultimo ? 'pensando'
+        : info.ultimo.tipo === 'ferramenta' ? atividadeDaFerramenta(info.ultimo.ferramenta)
+          : info.ultimo.tipo === 'texto' || info.ultimo.tipo === 'mensagem' ? 'respondendo' : 'pensando',
+      alvo: info.ultimo && info.ultimo.alvo ? info.ultimo.alvo : '',
       modelo: info.modelo || '',
       branch: info.branch || '',
       pasta: info.desktop ? '' : info.pasta || '',
@@ -764,6 +818,8 @@ function criarSala(p, tipo) {
     ...p,
     tipo,
     pastasN: p.pastas.map(norm),
+    // "processos" do projetos.json são nomes de programa; "processos" da sala são os que estão rodando
+    nomesProcessos: p.processos || [],
     app: null,
     terminais: [],
     processos: [],
@@ -865,7 +921,7 @@ function montarSalas(cfg) {
   const portaParaSala = new Map();
   for (const s of todas) for (const po of s.portas) portaParaSala.set(po, s);
   const processosCfg = new Map();
-  for (const s of todas) for (const n of s.processos) processosCfg.set(n, s);
+  for (const s of todas) for (const n of s.nomesProcessos) processosCfg.set(n, s);
 
   const direto = new Map();
   for (const p of sis.procs.values()) {
@@ -928,7 +984,8 @@ function montarSalas(cfg) {
     const agente = tipoAgente(p);
     if (SHELLS.has(p.base)) {
       if (pai && SHELLS.has(paiBase)) continue; // terminal dentro de terminal conta uma vez só
-      const interativo = IS_WIN
+      // a regra depende de onde vieram os dados (Windows ou ps), não de onde o servidor roda
+      const interativo = dadosDoWindows()
         ? p.janelas.length > 0 || HOSPEDEIROS.has(paiBase) || (!pai && !/\s\/c\s|-command|-encodedcommand|-file\s/i.test(p.cmd))
         : !!p.tty && (!pai || !SHELLS.has(paiBase));
       if (!interativo) continue;
@@ -977,7 +1034,7 @@ function montarSalas(cfg) {
     s.agentes = s.agentes.slice(0, 30);
     s.ultimaAtividade = Math.max(0, ...s.agentes.map((a) => a.ultimaAtividade), ...s.terminais.map((x) => x.desde || 0));
   }
-  return [...todas, recepcao].map(({ pastasN, ...s }) => s);
+  return [...todas, recepcao].map(({ pastasN, nomesProcessos, ...s }) => s);
 }
 
 function nomeTerminal(p, paiBase) {
@@ -1075,6 +1132,7 @@ function retrato() {
   const avisos = [];
   if (cfgCache.erro) avisos.push(cfgCache.erro);
   if (sis.erro) avisos.push('Coleta de processos: ' + sis.erro);
+  if (remoto.erro) avisos.push(remoto.erro);
   if (sis.modo === 'tasklist') avisos.push('O PowerShell não pôde rodar o coletor.ps1, então estou usando o tasklist: dá para ver os CMDs e as portas, mas não de qual projeto cada um é.');
   let salas = [];
   try { salas = montarSalas(cfg); } catch (e) { avisos.push('Erro ao montar as salas: ' + e.message); }
@@ -1085,6 +1143,7 @@ function retrato() {
     maquina: os.hostname(),
     usuario: (() => { try { return os.userInfo().username; } catch { return ''; } })(),
     plataforma: process.platform,
+    linkRemoto: remoto.url || '',
     coleta: { modo: sis.modo, temJanelas: sis.temJanelas, temPastas: sis.temPastas, lerPastaDosCmds: !!cfg.lerPastaDosCmds, ms: sis.ms, em: sis.em },
     avisos,
     salas,
@@ -1101,19 +1160,185 @@ function hostsPermitidos(porta) {
   return new Set([...h].flatMap((x) => [x, `${x}:${porta}`]));
 }
 
+// ───────────────────────────── acesso de fora (senha e link) ─────────────────────────────
+
+const remoto = { url: '', host: '', erro: '' };
+
+// Endereço que pode chamar o Escritório: esta máquina, a rede local e os endereços do projetos.json.
+function hostPermitido(h, porta, permitidos, cfg) {
+  if (permitidos.has(h) || h.endsWith('.local') || h.endsWith(`.local:${porta}`)) return true;
+  const semPorta = h.replace(/:\d+$/, '');
+  if (remoto.host && semPorta === remoto.host) return true;
+  return cfg.enderecosPermitidos.some((p) => (p.startsWith('*.') ? semPorta.endsWith(p.slice(1)) : semPorta === p));
+}
+
+// Veio deste mesmo PC (e não por um túnel, que também chega pelo 127.0.0.1)?
+function ehLocal(req) {
+  const ip = String(req.socket.remoteAddress || '');
+  const loop = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
+  const viaTunel = req.headers['cf-connecting-ip'] || req.headers['cf-ray'] || req.headers['x-forwarded-for'];
+  const h = String(req.headers.host || '').toLowerCase().replace(/:\d+$/, '');
+  return loop && !viaTunel && (h === 'localhost' || h === '127.0.0.1' || h === '[::1]');
+}
+
+// Pela rede local (acessoNaRede), sem túnel no meio?
+function ehRedeLocal(req) {
+  if (req.headers['cf-connecting-ip'] || req.headers['cf-ray'] || req.headers['x-forwarded-for']) return false;
+  const ip = String(req.socket.remoteAddress || '').replace(/^::ffff:/, '');
+  return /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|::1$|fe80:|fc|fd)/i.test(ip);
+}
+
+let sal = '';
+function salDaSessao() {
+  if (sal) return sal;
+  const f = path.join(DIR, '.sessao');
+  try { sal = fs.readFileSync(f, 'utf8').trim(); } catch {}
+  if (!sal || sal.length < 32) {
+    sal = crypto.randomBytes(24).toString('hex');
+    try { fs.writeFileSync(f, sal); } catch {}
+  }
+  return sal;
+}
+const tokenDe = (senha) => crypto.createHmac('sha256', salDaSessao()).update('escritorio:' + senha).digest('base64url');
+function igual(a, b) {
+  const A = Buffer.from(String(a)), B = Buffer.from(String(b));
+  return A.length === B.length && crypto.timingSafeEqual(A, B);
+}
+function lerCookie(req, nome) {
+  for (const parte of String(req.headers.cookie || '').split(';')) {
+    const i = parte.indexOf('=');
+    if (i > 0 && parte.slice(0, i).trim() === nome) return decodeURIComponent(parte.slice(i + 1).trim());
+  }
+  return '';
+}
+const tentativas = new Map();
+function ipDe(req) { return String(req.headers['cf-connecting-ip'] || req.socket.remoteAddress || '?'); }
+function bloqueado(req) {
+  const t = tentativas.get(ipDe(req));
+  return t && t.n >= 8 && agora() - t.desde < 15 * 60e3;
+}
+function errou(req) {
+  const ip = ipDe(req);
+  const t = tentativas.get(ip);
+  if (!t || agora() - t.desde > 15 * 60e3) tentativas.set(ip, { n: 1, desde: agora() });
+  else t.n++;
+}
+
+// 'livre' | 'senha' (precisa entrar) | 'recusar' (de fora sem senha configurada)
+function acesso(req, cfg) {
+  if (ehLocal(req)) return 'livre';
+  if (cfg.senha) return igual(lerCookie(req, 'escritorio'), tokenDe(cfg.senha)) ? 'livre' : 'senha';
+  return (cfg.acessoNaRede || ARGS.has('--rede')) && ehRedeLocal(req) ? 'livre' : 'recusar';
+}
+
+function paginaEntrar(msg) {
+  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrar · Escritório</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Nunito:wght@600;800&display=swap">
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; box-sizing: border-box;
+    font-family: Nunito, system-ui, sans-serif; color: #f1f3fb;
+    background: radial-gradient(900px 500px at 20% -10%, #24305a, transparent 60%), #121626; }
+  form { width: min(360px, 100%); background: #1e2440; border: 1px solid #333c66; border-radius: 22px; padding: 26px 22px; display: grid; gap: 14px; }
+  h1 { margin: 0; font-family: Fredoka, Nunito, sans-serif; font-weight: 600; font-size: 24px; }
+  p { margin: 0; color: #a9b1d3; }
+  label { font-weight: 800; font-size: 14px; }
+  input { font: inherit; padding: 12px 14px; border-radius: 12px; border: 1px solid #333c66; background: #0f1322; color: #f1f3fb; }
+  input:focus { outline: 3px solid #ffc86b; outline-offset: 1px; }
+  button { font: inherit; font-weight: 800; padding: 12px; border: 0; border-radius: 999px; background: #ffc86b; color: #1d1405; cursor: pointer; }
+  .erro { color: #ff8d9c; }
+</style></head><body>
+<form method="post" action="entrar">
+  <h1>Escritório</h1>
+  <p>Digite a senha que está no <b>projetos.json</b> do seu PC.</p>
+  ${msg ? `<p class="erro" role="alert">${msg}</p>` : ''}
+  <label for="senha">Senha</label>
+  <input id="senha" name="senha" type="password" autocomplete="current-password" autofocus required>
+  <button type="submit">Entrar</button>
+</form></body></html>`;
+}
+
+function abrirLinkRemoto(porta) {
+  const filho = spawn(IS_WIN ? 'cloudflared.exe' : 'cloudflared', ['tunnel', '--no-autoupdate', '--url', `http://localhost:${porta}`],
+    { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  const ler = (d) => {
+    const m = /https:\/\/(?!api\.)[a-z0-9-]+\.trycloudflare\.com/.exec(String(d));
+    if (!m || remoto.url) return;
+    remoto.url = m[0];
+    remoto.host = new URL(m[0]).host;
+    remoto.erro = '';
+    log(`Link para abrir de qualquer lugar (com a senha): ${m[0]}`);
+    try { fs.writeFileSync(path.join(DIR, 'link-remoto.txt'), m[0] + '\n'); } catch {}
+  };
+  filho.stdout.on('data', ler);
+  filho.stderr.on('data', ler);
+  filho.on('error', () => { remoto.erro = 'O "linkRemoto" está ligado, mas não achei o cloudflared neste PC. Instale o cloudflared ou desligue a opção.'; });
+  filho.on('exit', () => { if (remoto.url) { remoto.url = ''; remoto.host = ''; remoto.erro = 'O túnel do Cloudflare caiu. Reabra o Escritório para ganhar um link novo.'; } });
+  const parar = () => { try { filho.kill(); } catch {} };
+  process.on('exit', parar);
+  process.on('SIGINT', () => { parar(); process.exit(0); });
+}
+
+const CABECALHOS = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Frame-Options': 'DENY' };
+
 function servir(cfg) {
   const porta = Number(process.env.PORT) || cfg.porta || 7777;
   const host = ARGS.has('--rede') || cfg.acessoNaRede ? '0.0.0.0' : '127.0.0.1';
   const permitidos = hostsPermitidos(porta);
   const srv = http.createServer((req, res) => {
-    // Só responde a quem chama pelo nome desta máquina (bloqueia "DNS rebinding").
+    const cfgAgora = config();
+    // Só responde a quem chama pelo nome desta máquina ou por um endereço liberado (bloqueia "DNS rebinding").
     const h = String(req.headers.host || '').toLowerCase();
-    if (!permitidos.has(h) && !h.endsWith('.local') && !h.endsWith(`.local:${porta}`)) {
-      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('Acesso negado.');
+    if (!hostPermitido(h, porta, permitidos, cfgAgora)) {
+      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8', ...CABECALHOS });
+      res.end('Acesso negado. Se este endereço é seu, coloque ele em "enderecosPermitidos" no projetos.json.');
       return;
     }
     const url = new URL(req.url, 'http://x');
+    const seguro = req.headers['x-forwarded-proto'] === 'https' || !!req.headers['cf-visitor'];
+    if (url.pathname === '/entrar') {
+      if (req.method === 'POST') {
+        if (bloqueado(req)) { res.writeHead(429, { 'Content-Type': 'text/html; charset=utf-8', ...CABECALHOS }); res.end(paginaEntrar('Muitas tentativas. Espere 15 minutos.')); return; }
+        let corpo = '';
+        req.on('data', (d) => { corpo += d; if (corpo.length > 4096) req.destroy(); });
+        req.on('end', () => {
+          const senha = new URLSearchParams(corpo).get('senha') || '';
+          if (cfgAgora.senha && igual(senha, cfgAgora.senha)) {
+            tentativas.delete(ipDe(req));
+            res.writeHead(303, {
+              Location: './', ...CABECALHOS,
+              'Set-Cookie': `escritorio=${tokenDe(cfgAgora.senha)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${30 * 86400}${seguro ? '; Secure' : ''}`,
+            });
+            res.end();
+          } else {
+            errou(req);
+            res.writeHead(401, { 'Content-Type': 'text/html; charset=utf-8', ...CABECALHOS });
+            res.end(paginaEntrar(cfgAgora.senha ? 'Senha errada.' : 'Nenhuma senha foi configurada no projetos.json.'));
+          }
+        });
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', ...CABECALHOS });
+      res.end(paginaEntrar(''));
+      return;
+    }
+    if (url.pathname === '/sair') {
+      res.writeHead(303, { Location: 'entrar', 'Set-Cookie': 'escritorio=; Path=/; Max-Age=0', ...CABECALHOS });
+      res.end();
+      return;
+    }
+    const pode = acesso(req, cfgAgora);
+    if (pode === 'recusar') {
+      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8', ...CABECALHOS });
+      res.end('Para abrir o Escritório de fora deste PC, coloque uma "senha" no projetos.json.');
+      return;
+    }
+    if (pode === 'senha') {
+      if (url.pathname === '/api/status') { res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8', ...CABECALHOS }); res.end('{"entrar":true}'); }
+      else { res.writeHead(303, { Location: 'entrar', ...CABECALHOS }); res.end(); }
+      return;
+    }
     if (url.pathname === '/api/status') {
       const corpo = JSON.stringify(retrato());
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -1127,7 +1352,7 @@ function servir(cfg) {
           // o index.html é escrito sem <head>/<body>; o navegador põe <title> e <style> no head sozinho
           html = '<!doctype html>\n<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + html + '\n</html>';
         }
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', ...CABECALHOS });
         res.end(html);
       });
       return;
@@ -1154,6 +1379,10 @@ function servir(cfg) {
       }
     }
     log('Deixe esta janela aberta. Para fechar o Escritório, feche a janela ou aperte Ctrl+C.');
+    if (cfg.linkRemoto) {
+      if (cfg.senha) abrirLinkRemoto(porta);
+      else { remoto.erro = 'O "linkRemoto" está ligado, mas falta uma "senha" no projetos.json. Sem senha, o link não é aberto.'; log(remoto.erro); }
+    }
     if (ARGS.has('--abrir')) abrirNavegador(url);
   });
 }
@@ -1167,17 +1396,27 @@ function abrirNavegador(url) {
 
 // ───────────────────────────── início ─────────────────────────────
 
-iniciarColeta();
-checarSaude();
-setInterval(checarSaude, 10000);
-
-if (ARGS.has('--json')) {
-  setTimeout(async () => {
-    await checarSaude();
-    ultimoRetrato = null;
-    process.stdout.write(JSON.stringify(retrato(), null, 2) + '\n');
-    process.exit(0);
-  }, IS_WIN ? 9000 : 2500);
-} else {
-  servir(config());
+function iniciar() {
+  iniciarColeta();
+  checarSaude();
+  setInterval(checarSaude, 10000);
+  if (ARGS.has('--json')) {
+    setTimeout(async () => {
+      await checarSaude();
+      ultimoRetrato = null;
+      process.stdout.write(JSON.stringify(retrato(), null, 2) + '\n');
+      process.exit(0);
+    }, IS_WIN ? 9000 : 2500);
+  } else {
+    servir(config());
+  }
 }
+
+if (require.main === module) iniciar();
+
+// para os testes (node --test)
+module.exports = {
+  casaPalavra, limparCmd, lerNetstat, segundosDeEtime, normalizarConfig, estadoClaude, estadoCodex, ultimoClaude,
+  lerClaude, atividadeDaFerramenta, detalheDaFerramenta, salaPorPasta, criarSala, registrar, montarSalas, sis,
+  hostPermitido, ehLocal, ehRedeLocal, acesso, tokenDe, igual, lerCookie, remoto, iniciar,
+};

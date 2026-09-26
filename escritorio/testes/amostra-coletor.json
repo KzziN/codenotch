@@ -1,0 +1,71 @@
+{
+ "servicos": [
+  {
+   "exibicao": "MySQL 8.0",
+   "nome": "MySQL80",
+   "estado": "Running"
+  }
+ ],
+ "temPastas": false,
+ "ms": 64,
+ "procs": [
+  {
+   "pasta": null,
+   "pid": 4120,
+   "desde": "2026-09-26T09:19:08.6716338Z",
+   "nome": "cmd.exe",
+   "ppid": 900,
+   "cmd": "C:\\WINDOWS\\system32\\cmd.exe"
+  },
+  {
+   "pasta": null,
+   "pid": 4188,
+   "desde": "2026-09-26T09:20:08.6716338Z",
+   "nome": "node.exe",
+   "ppid": 4120,
+   "cmd": "node C:\\Projetos\\totem-faculdade\\node_modules\\vite\\bin\\vite.js --token=abc"
+  },
+  {
+   "pasta": null,
+   "pid": 900,
+   "desde": null,
+   "nome": "WindowsTerminal.exe",
+   "ppid": 1,
+   "cmd": "wt.exe"
+  },
+  {
+   "pasta": null,
+   "pid": 3020,
+   "desde": "2026-09-25T08:49:08.6716338Z",
+   "nome": "cloudflared.exe",
+   "ppid": 1,
+   "cmd": "cloudflared tunnel run totem"
+  },
+  {
+   "pasta": null,
+   "pid": 7777,
+   "desde": null,
+   "nome": "Code.exe",
+   "ppid": 1,
+   "cmd": "Code.exe"
+  }
+ ],
+ "janelas": [
+  {
+   "pid": 4120,
+   "titulo": "npm run dev"
+  },
+  {
+   "pid": 7777,
+   "titulo": "pagamento.js - totem-faculdade - Visual Studio Code"
+  }
+ ],
+ "temJanelas": true,
+ "portas": [
+  {
+   "ip": "::1",
+   "pid": 4188,
+   "porta": 5173
+  }
+ ]
+}
