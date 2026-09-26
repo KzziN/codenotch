@@ -3,6 +3,10 @@
 Um escritório em pixel art onde cada projeto tem a sua sala. Olhando de cima dá
 para ver, sala por sala:
 
+- **o app rodando de verdade**: cada sala tem um telão grande que mostra o app
+  do projeto ao vivo (a página dele, dentro da sala). Clique na sala para ver o
+  telão grande e abrir o app. Apps que proíbem aparecer dentro de outra página
+  mostram um desenho no lugar;
 - **se o app está no ar**: o servidor (rack) no canto acende verde quando o app
   responde e vermelho quando está rodando com erro;
 - **quantos CMDs estão abertos**: cada CMD, PowerShell ou terminal vira um
@@ -55,7 +59,7 @@ sem precisar reiniciar.
 | `descricao` | Uma linha sobre o projeto (aparece no detalhe). |
 | `palavras` | Palavras que aparecem no caminho da pasta, na linha de comando ou no título da janela. |
 | `pastas` | O caminho exato, se preferir: `["C:\\Projetos\\totem"]`. Pode usar `%USERPROFILE%` ou `~`. |
-| `url` | Endereço que o Escritório testa a cada 10 s para saber se o app está no ar. Ex.: `"http://localhost:5173"`. |
+| `url` | Endereço do app. Ele aparece no telão da sala e é testado a cada 10 s. Ex.: `"http://localhost:5173"`. Sem `url`, o telão usa a primeira porta que o app abrir. |
 | `porta` | Sem `url`, basta a porta: `3000` ou `[3000, 3001]`. |
 | `processos` | Programas que, rodando, significam que o app está no ar. Ex.: `["cloudflared"]`. |
 | `servicos` | Serviços do Windows do projeto. Ex.: `["MySQL80"]` (aceita `*`). |

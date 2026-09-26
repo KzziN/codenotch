@@ -1003,7 +1003,12 @@ function testarUrl(url) {
     const req = mod.request(u, { method: 'GET', timeout: 4000, rejectUnauthorized: false, headers: { 'User-Agent': 'Escritorio/1' } }, (res) => {
       res.resume();
       const codigo = res.statusCode || 0;
-      ok({ ok: codigo > 0 && codigo < 500, codigo, ms: agora() - t0 });
+      // o telão da sala mostra o app num iframe; alguns apps proíbem isso
+      const xfo = String(res.headers['x-frame-options'] || '').toLowerCase();
+      const csp = String(res.headers['content-security-policy'] || '').toLowerCase();
+      const fa = /frame-ancestors([^;]*)/.exec(csp);
+      const embutivel = !xfo && !(fa && !/\*|localhost|127\.0\.0\.1/.test(fa[1]));
+      ok({ ok: codigo > 0 && codigo < 500, codigo, ms: agora() - t0, embutivel });
     });
     req.on('timeout', () => { req.destroy(); ok({ ok: false, erro: 'não respondeu em 4 s', ms: agora() - t0 }); });
     req.on('error', (e) => ok({ ok: false, erro: e.code === 'ECONNREFUSED' ? 'conexão recusada' : e.code === 'ENOTFOUND' ? 'endereço não encontrado' : e.message, ms: agora() - t0 }));
@@ -1044,7 +1049,10 @@ function estadoApp(s) {
     : [];
   const temServico = servicos.length > 0;
   const servicoOk = servicos.some((x) => /running/i.test(x.estado));
-  const base = { url: s.url || '', portas, servicos, verificadoEm: h ? h.em : 0 };
+  const primeiraPorta = portas.find((x) => x.porta !== 48666);
+  const tela = s.url ? { url: s.url, embutivel: h ? h.embutivel !== false : true }
+    : primeiraPorta ? { url: `http://localhost:${primeiraPorta.porta}`, embutivel: true } : null;
+  const base = { url: s.url || '', portas, servicos, verificadoEm: h ? h.em : 0, tela };
   if (h) {
     if (h.ok) return { ...base, estado: 'no-ar', codigo: h.codigo || 0, ms: h.ms, resumo: h.codigo ? `respondeu ${h.codigo} em ${h.ms} ms` : `porta aberta (${h.ms} ms)` };
     if (s.processos.length || servicoOk) return { ...base, estado: 'erro', codigo: h.codigo || 0, resumo: `rodando, mas ${h.codigo ? 'respondeu ' + h.codigo : h.erro}` };
