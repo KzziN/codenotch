@@ -1347,6 +1347,252 @@ function servir(cfg) {
       res.end(corpo);
       return;
     }
+    if (url.pathname === '/api/projetos') {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', ...CABECALHOS });
+      res.end(JSON.stringify({ projetos: cfg.projetos || [] }));
+      return;
+    }
+
+    if (url.pathname === '/api/projetos/exportar') {
+      const formato = url.searchParams.get('formato') || 'json';
+      if (formato === 'powershell') {
+        const ps = cfg.projetos.map(p => ({
+          nome: p.nome,
+          palavras: p.palavras || [],
+          processos: p.processos || [],
+          servicos: p.servicos || [],
+          pastas: p.pastas || []
+        }));
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', ...CABECALHOS });
+        res.end(JSON.stringify(ps, null, 2));
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', ...CABECALHOS });
+        res.end(JSON.stringify({ projetos: cfg.projetos || [] }, null, 2));
+      }
+      return;
+    }
+
+    if (url.pathname === '/api/projetos/adicionar' && req.method === 'POST') {
+      let corpo = '';
+      req.on('data', (chunk) => { corpo += chunk.toString(); });
+      req.on('end', () => {
+        try {
+          const novo = JSON.parse(corpo);
+          if (!novo.nome) { res.writeHead(400); res.end('Nome obrigatório'); return; }
+          cfg.projetos = cfg.projetos || [];
+          const existe = cfg.projetos.find(p => p.nome.toLowerCase() === novo.nome.toLowerCase());
+          if (existe) { res.writeHead(409); res.end('Projeto já existe'); return; }
+          cfg.projetos.push({
+            nome: novo.nome,
+            descricao: novo.descricao || '',
+            icone: novo.icone || 'caixa',
+            cor: novo.cor || '#999',
+            palavras: novo.palavras || [],
+            processos: novo.processos || [],
+            servicos: novo.servicos || [],
+            pastas: novo.pastas || [],
+            url: novo.url || '',
+            porta: novo.porta || null
+          });
+          fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2));
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ ok: true, projetos: cfg.projetos }));
+        } catch (e) {
+          res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ erro: e.message }));
+        }
+      });
+      return;
+    }
+
+    if (url.pathname === '/admin') {
+      const html = `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gerenciador de Projetos</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #1a1a1a; color: #fff; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { margin-bottom: 30px; font-size: 28px; }
+    .painel { background: #2a2a2a; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    .painel h2 { font-size: 18px; margin-bottom: 15px; color: #4fb3ff; }
+    .form-grupo { margin-bottom: 15px; }
+    label { display: block; font-size: 12px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+    input, textarea { width: 100%; padding: 10px; border: 1px solid #444; border-radius: 4px; background: #1a1a1a; color: #fff; font-family: inherit; }
+    input:focus, textarea:focus { outline: none; border-color: #4fb3ff; }
+    .btn { padding: 10px 20px; background: #4fb3ff; color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; margin-right: 10px; }
+    .btn:hover { background: #3f9fe0; }
+    .btn-sucesso { background: #7bd389; }
+    .btn-sucesso:hover { background: #6bb876; }
+    .btn-copia { background: #888; padding: 5px 10px; font-size: 12px; }
+    .lista-projetos { display: grid; gap: 15px; }
+    .item-projeto { background: #3a3a3a; padding: 15px; border-radius: 6px; border-left: 4px solid #4fb3ff; }
+    .item-projeto h3 { font-size: 14px; margin-bottom: 8px; }
+    .item-projeto p { font-size: 12px; color: #aaa; margin-bottom: 5px; }
+    .tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+    .tag { background: #555; padding: 3px 8px; border-radius: 3px; font-size: 11px; }
+    textarea { min-height: 80px; resize: vertical; }
+    .exportar { margin-top: 20px; }
+    .codigo { background: #1a1a1a; border: 1px solid #444; border-radius: 4px; padding: 15px; margin-top: 10px; font-family: monospace; font-size: 11px; overflow-x: auto; max-height: 300px; }
+    .botoes-form { display: flex; gap: 10px; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📋 Gerenciador de Projetos</h1>
+
+    <div class="painel">
+      <h2>Adicionar Novo Projeto</h2>
+      <div class="form-grupo">
+        <label>Nome</label>
+        <input type="text" id="nome" placeholder="ex: Meu Projeto">
+      </div>
+      <div class="form-grupo">
+        <label>Descrição</label>
+        <textarea id="descricao" placeholder="ex: Descrição do projeto"></textarea>
+      </div>
+      <div class="form-grupo">
+        <label>Palavras-chave (separadas por vírgula)</label>
+        <input type="text" id="palavras" placeholder="ex: meu-projeto, projeto, app">
+      </div>
+      <div class="form-grupo">
+        <label>Processos (separados por vírgula)</label>
+        <input type="text" id="processos" placeholder="ex: node.exe, python.exe">
+      </div>
+      <div class="form-grupo">
+        <label>Serviços (separados por vírgula)</label>
+        <input type="text" id="servicos" placeholder="ex: MySQL, PostgreSQL">
+      </div>
+      <div class="form-grupo">
+        <label>Cor (hex)</label>
+        <input type="text" id="cor" value="#4fb3ff" placeholder="#4fb3ff">
+      </div>
+      <div class="botoes-form">
+        <button class="btn" onclick="adicionarProjeto()">Adicionar Projeto</button>
+        <button class="btn btn-copia" onclick="copiarExemplo()">Exemplo de JSON</button>
+      </div>
+      <div id="mensagem" style="margin-top: 15px; font-size: 12px;"></div>
+    </div>
+
+    <div class="painel">
+      <h2>Projetos Existentes</h2>
+      <div class="lista-projetos" id="listaProjetos">Carregando...</div>
+    </div>
+
+    <div class="painel exportar">
+      <h2>Exportar para Codex</h2>
+      <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">Copie o JSON abaixo e passe para o Codex/PowerShell adicionar</p>
+      <button class="btn btn-sucesso" onclick="exportar()">Gerar Exportação</button>
+      <div class="codigo" id="exportacao"></div>
+      <button class="btn btn-copia" onclick="copiarExportacao()" style="margin-top: 10px;">Copiar para Clipboard</button>
+    </div>
+  </div>
+
+  <script>
+    function formatarTags(arr) {
+      if (!arr || !arr.length) return '';
+      return arr.map(t => \`<span class="tag">\${t}</span>\`).join('');
+    }
+
+    function carregarProjetos() {
+      fetch('/api/projetos')
+        .then(r => r.json())
+        .then(d => {
+          const html = (d.projetos || []).map(p => \`
+            <div class="item-projeto">
+              <h3>● \${p.nome}</h3>
+              <p>\${p.descricao || 'Sem descrição'}</p>
+              <div class="tags">
+                \${formatarTags(p.palavras)}
+                \${formatarTags(p.processos)}
+                \${formatarTags(p.servicos)}
+              </div>
+            </div>
+          \`).join('');
+          document.getElementById('listaProjetos').innerHTML = html || '<p style="color: #888;">Nenhum projeto ainda</p>';
+        });
+    }
+
+    function adicionarProjeto() {
+      const nome = document.getElementById('nome').value.trim();
+      if (!nome) { alerta('Nome obrigatório'); return; }
+
+      const novo = {
+        nome,
+        descricao: document.getElementById('descricao').value.trim(),
+        palavras: document.getElementById('palavras').value.split(',').map(s => s.trim()).filter(Boolean),
+        processos: document.getElementById('processos').value.split(',').map(s => s.trim()).filter(Boolean),
+        servicos: document.getElementById('servicos').value.split(',').map(s => s.trim()).filter(Boolean),
+        cor: document.getElementById('cor').value.trim()
+      };
+
+      fetch('/api/projetos/adicionar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(novo)
+      })
+        .then(r => r.json())
+        .then(d => {
+          if (d.ok) {
+            alerta('✓ Projeto adicionado!', 'sucesso');
+            document.getElementById('nome').value = '';
+            document.getElementById('descricao').value = '';
+            document.getElementById('palavras').value = '';
+            document.getElementById('processos').value = '';
+            document.getElementById('servicos').value = '';
+            carregarProjetos();
+          } else {
+            alerta(d.erro || 'Erro ao adicionar');
+          }
+        })
+        .catch(e => alerta(e.message));
+    }
+
+    function exportar() {
+      fetch('/api/projetos/exportar?formato=powershell')
+        .then(r => r.json())
+        .then(d => {
+          document.getElementById('exportacao').textContent = JSON.stringify(d, null, 2);
+        });
+    }
+
+    function copiarExportacao() {
+      const texto = document.getElementById('exportacao').textContent;
+      if (!texto) { alerta('Gere a exportação primeiro'); return; }
+      navigator.clipboard.writeText(texto).then(() => alerta('✓ Copiado!', 'sucesso')).catch(() => alerta('Erro ao copiar'));
+    }
+
+    function copiarExemplo() {
+      const ex = {
+        nome: 'Meu App',
+        descricao: 'Descrição do meu aplicativo',
+        palavras: ['meu-app', 'app'],
+        processos: ['node.exe'],
+        servicos: [],
+        cor: '#4fb3ff'
+      };
+      navigator.clipboard.writeText(JSON.stringify(ex, null, 2)).then(() => alerta('✓ Exemplo copiado!', 'sucesso'));
+    }
+
+    function alerta(msg, tipo) {
+      const el = document.getElementById('mensagem');
+      el.textContent = msg;
+      el.style.color = tipo === 'sucesso' ? '#7bd389' : '#ff6b6b';
+      setTimeout(() => el.textContent = '', 3000);
+    }
+
+    carregarProjetos();
+  </script>
+</body>
+</html>`;
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', ...CABECALHOS });
+      res.end(html);
+      return;
+    }
+
     if (url.pathname === '/' || url.pathname === '/index.html') {
       fs.readFile(path.join(DIR, 'index.html'), 'utf8', (erro, html) => {
         if (erro) { res.writeHead(500); res.end('index.html não encontrado'); return; }
