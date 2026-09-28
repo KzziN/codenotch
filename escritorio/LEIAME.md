@@ -1,0 +1,170 @@
+# Escritório
+
+Um escritório desenhado, visto de cima, onde cada projeto tem a sua sala. Olhando de cima dá
+para ver, sala por sala:
+
+- **o app rodando de verdade**: cada sala tem um telão grande que mostra o app
+  do projeto ao vivo (a página dele, dentro da sala). Clique na sala para ver o
+  telão grande e abrir o app. Apps que proíbem aparecer dentro de outra página
+  mostram um desenho no lugar;
+- **se o app está no ar**: o servidor (rack) no canto acende verde quando o app
+  responde e vermelho quando está rodando com erro;
+- **quantos CMDs estão abertos**: cada CMD, PowerShell ou terminal vira uma
+  janelinha no quadro da parede, à esquerda;
+- **quais agentes estão trabalhando, e no quê**: cada agente de IA (Claude Code,
+  Claude Desktop, Codex…) é um robô sentado numa mesa, com o nome no crachá. O
+  balão em cima da cabeça mostra o que ele está fazendo: lupa lendo arquivos,
+  lápis editando, `>_` rodando um comando, globo pesquisando na internet, `…`
+  pensando; `?` esperando você, `!` erro (ou limite de uso), `✓` terminou.
+  Clicando na sala aparece a frase inteira, como "Editando: pagamento.js";
+- **onde você está**: se o projeto está aberto no VS Code (ou Cursor, Android
+  Studio…), você aparece na primeira mesa.
+
+A luz da sala acende quando tem alguém lá dentro ou um CMD aberto. A borda da
+sala pisca amarelo ou vermelho quando ela precisa de você.
+
+**Avisos:** o botão com o sino, no alto da página, liga um som e uma
+notificação para quando um agente começa a esperar você, dá erro ou termina, e
+para quando um app sai do ar. A escolha fica guardada no navegador.
+
+Clique numa sala para ver tudo com detalhe: endereço e portas do app, cada CMD
+(com o que está rodando dentro), cada agente com o que você pediu e a última
+resposta, e os processos.
+
+## Ligar
+
+Precisa do [Node.js](https://nodejs.org) (versão 18 ou mais nova). Não tem
+`npm install`.
+
+1. Copie esta pasta `escritorio` para o PC.
+2. Dê dois cliques em `iniciar-escritorio.bat`.
+3. O navegador abre em <http://localhost:7777>. Deixe a janela preta aberta:
+   fechando ela, o Escritório para.
+
+Para abrir junto com o Windows: aperte `Win + R`, digite `shell:startup`,
+e crie ali um atalho para o `iniciar-escritorio.bat` (nas propriedades do
+atalho, em **Executar**, escolha **Minimizada**).
+
+## Os projetos
+
+Não precisa cadastrar nada para começar. Toda pasta em que você já conversou com
+o Claude Code ou com o Codex nos últimos 14 dias vira uma sala sozinha (aparece
+com a marca **nova**). Pastas abertas no VS Code com a extensão do Claude Code
+também.
+
+O `projetos.json` já vem com os projetos das nossas conversas (Totem, NDD, KPAX,
+Easy Inventory, Raspberry, Meet C2A, Lexmark, IA de Imagens, Cloudflare,
+Codenotch, Corpo Humano 3D). Cada um é reconhecido pelas **palavras** no caminho
+da pasta: uma pasta `C:\Projetos\totem-faculdade` cai na sala do Totem por causa
+da palavra `totem`. Ajuste à vontade; o Escritório relê o arquivo sozinho,
+sem precisar reiniciar.
+
+| Campo | Para que serve |
+|---|---|
+| `nome` | O nome na placa da sala. |
+| `descricao` | Uma linha sobre o projeto (aparece no detalhe). |
+| `palavras` | Palavras que aparecem no caminho da pasta, na linha de comando ou no título da janela. |
+| `pastas` | O caminho exato, se preferir: `["C:\\Projetos\\totem"]`. Pode usar `%USERPROFILE%` ou `~`. |
+| `url` | Endereço do app. Ele aparece no telão da sala e é testado a cada 10 s. Ex.: `"http://localhost:5173"`. Sem `url`, o telão usa a primeira porta que o app abrir. |
+| `porta` | Sem `url`, basta a porta: `3000` ou `[3000, 3001]`. |
+| `processos` | Programas que, rodando, significam que o app está no ar. Ex.: `["cloudflared"]`. |
+| `servicos` | Serviços do Windows do projeto. Ex.: `["MySQL80"]` (aceita `*`). |
+| `icone` | `totem`, `impressora`, `notebook`, `raspberry`, `camera`, `imagem`, `nuvem`, `notch`, `corpo`, `pasta`, `codigo`. |
+| `cor` | Cor da sala, como `"#4fb3ff"`. |
+| `oculto` | `true` esconde a sala. |
+
+Configurações gerais no topo do arquivo:
+
+| Campo | Padrão | O que faz |
+|---|---|---|
+| `titulo` | `Escritório do KzziN` | O nome no alto da página. |
+| `porta` | `7777` | Porta do próprio Escritório. |
+| `descobrirProjetos` | `true` | Cria salas sozinho para as pastas dos agentes. |
+| `minutosAgenteParado` | `45` | Por quanto tempo um agente que terminou continua sentado na mesa. |
+| `diasDeHistorico` | `14` | Até quantos dias atrás olhar as conversas. |
+| `lerPastaDosCmds` | `false` | Veja abaixo. |
+| `acessoNaRede` | `false` | Abre também para a rede local (Wi-Fi do trabalho). Veja abaixo. |
+| `senha` | vazia | Senha para abrir o Escritório de fora deste PC. Veja abaixo. |
+| `linkRemoto` | `false` | Abre um link do Cloudflare para ver de qualquer lugar. Precisa de `senha`. |
+| `enderecosPermitidos` | `[]` | Endereços seus que podem abrir o Escritório, como `"escritorio.c2a.com.br"` ou `"*.trycloudflare.com"`. |
+
+### De qual projeto é cada CMD?
+
+O Windows não conta em que pasta cada CMD está. Sem ajuda, o Escritório liga o
+CMD ao projeto pelo título da janela, pelo que está rodando dentro dele (por
+exemplo `node C:\Projetos\totem\...`) ou pelo agente aberto nele. O que não
+dá para descobrir fica na **Recepção**.
+
+Com `"lerPastaDosCmds": true`, o coletor lê a pasta atual de cada CMD,
+PowerShell, node e python, e acerta quase sempre. Fica desligado de fábrica
+porque, para isso, ele lê um pedacinho da memória desses programas, e antivírus
+de empresa às vezes desconfiam de script fazendo isso. Se o seu PC é gerenciado
+pela TI, combine com eles antes de ligar.
+
+### Ver do celular
+
+**Na mesma rede Wi-Fi:** com `"acessoNaRede": true` (ou rodando
+`node servidor.js --rede`), a janela mostra o endereço (`http://192.168.x.x:7777`).
+
+**De qualquer lugar (4G, casa):** coloque uma senha e ligue o link:
+
+```json
+"senha": "uma frase que só você sabe",
+"linkRemoto": true,
+```
+
+Ao abrir, o Escritório liga um túnel do Cloudflare (precisa do `cloudflared`
+instalado, o mesmo dos seus links) e mostra na página, no PC, um QR code com o
+link `https://….trycloudflare.com`. Aponte o celular, digite a senha e pronto:
+o celular fica conectado por 30 dias. O link também fica salvo em
+`link-remoto.txt`.
+
+Esse link muda toda vez que o Escritório reinicia. Para um endereço fixo, crie um
+túnel com nome no painel do Cloudflare apontando para `http://localhost:7777`
+(como os dos outros projetos), coloque o endereço em `enderecosPermitidos`, e
+deixe `linkRemoto` desligado.
+
+Sem senha, o Escritório recusa qualquer acesso que venha de fora. Muitas senhas
+erradas seguidas bloqueiam aquele endereço por 15 minutos. De fora, os telões
+mostram os desenhos em vez dos apps: um app em `localhost` só existe no PC.
+Nas linhas de comando mostradas, senhas e tokens aparecem como `***`.
+
+## O que ele lê (e o que não faz)
+
+Só leitura, tudo local. Nada sai do PC, a não ser que você ligue o `linkRemoto`:
+
+- a lista de processos, janelas abertas, portas em uso e serviços, pelo
+  PowerShell (`coletor.ps1`, que você pode abrir e ler);
+- as conversas do Claude Code (`%USERPROFILE%\.claude\projects`), do Claude
+  Desktop e do Codex (`%USERPROFILE%\.codex\sessions`), só para saber o estado,
+  o título e a sua última mensagem;
+- os arquivos `%USERPROFILE%\.claude\ide\*.lock`, para saber que pastas o VS
+  Code tem abertas. Eles também guardam um token, que o Escritório ignora.
+
+Ele não abre, fecha nem altera nada nos seus projetos.
+
+Os estados dos agentes são deduzidos das conversas: **esperando você** quer
+dizer que o agente parou há mais de 20 s no meio de um comando, o que quase
+sempre é um pedido de permissão (mas pode ser um comando demorado).
+
+## Problemas
+
+- **A página diz DEMONSTRAÇÃO**: ela foi aberta direto do arquivo ou sem o
+  servidor. Abra pelo `iniciar-escritorio.bat` e use o endereço
+  <http://localhost:7777>.
+- **Aviso "estou usando o tasklist"**: a política do Windows não deixou o
+  PowerShell rodar o `coletor.ps1`. Os CMDs e portas ainda aparecem, mas sem
+  saber o projeto de cada um.
+- **"A porta 7777 já está em uso"**: o Escritório já está aberto. Se não
+  estiver, troque `"porta"` no `projetos.json`.
+- **Uma sala não aparece**: confira as `palavras` ou coloque o caminho em
+  `pastas`. Para testar sem abrir o navegador: `node servidor.js --json`.
+- **O telão mostra um desenho, e não o app**: coloque a `url` do app no
+  projeto. Alguns apps proíbem aparecer dentro de outra página; nesses, o
+  painel da sala avisa e tem o botão **Abrir o app**.
+
+## Testes
+
+Para quem for mexer no código: `node --test` (dentro da pasta `escritorio`) roda
+os testes do servidor, e `pwsh -File testes/checar-coletor.ps1` confere o
+`coletor.ps1` (sintaxe, compilação e uma volta com dados falsos).

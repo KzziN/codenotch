@@ -1,0 +1,126 @@
+{
+  "titulo": "Escritório do KzziN",
+  "porta": 7777,
+  "acessoNaRede": false,
+  "senha": "",
+  "linkRemoto": false,
+  "enderecosPermitidos": [],
+  "descobrirProjetos": true,
+  "lerPastaDosCmds": false,
+  "minutosAgenteParado": 45,
+  "diasDeHistorico": 14,
+  "projetos": [
+    {
+      "nome": "Totem de Pagamento",
+      "descricao": "Sistema de pagamento no totem da faculdade (app kiosk Android com WebView).",
+      "icone": "totem",
+      "cor": "#4fb3ff",
+      "palavras": ["totem", "kiosk", "quiosque"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    },
+    {
+      "nome": "NDD Financeiro",
+      "descricao": "Modernização do NDD e financeiro, consulta NDD × base local, portal mps.nddprint.com.",
+      "icone": "impressora",
+      "cor": "#7bd389",
+      "palavras": ["ndd", "nddprint", "financeiro"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    },
+    {
+      "nome": "KPAX",
+      "descricao": "Auditoria do sistema KPAX, lista de dispositivos e conexão MCP.",
+      "icone": "impressora",
+      "cor": "#ff9f5a",
+      "palavras": ["kpax"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    },
+    {
+      "nome": "Easy Inventory",
+      "descricao": "Monitoração dos notebooks da empresa.",
+      "icone": "notebook",
+      "cor": "#b58cff",
+      "palavras": ["easy-inventory", "easyinventory", "easy_inventory", "inventory", "inventario"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    },
+    {
+      "nome": "Raspberry Pi",
+      "descricao": "Desempenho e conectividade do Raspberry.",
+      "icone": "raspberry",
+      "cor": "#ff6b8b",
+      "palavras": ["raspberry", "raspi", "rpi"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    },
+    {
+      "nome": "Meet Interno C2A",
+      "descricao": "Sala de reunião por vídeo interna e gratuita, com a marca da C2A.",
+      "icone": "camera",
+      "cor": "#3fd0c9",
+      "palavras": ["meet", "jitsi", "reuniao", "videochamada"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    },
+    {
+      "nome": "Lexmark",
+      "descricao": "Desenvolvimento nas impressoras Lexmark (autorização e integração MPS).",
+      "icone": "impressora",
+      "cor": "#e8e46a",
+      "palavras": ["lexmark"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    },
+    {
+      "nome": "IA de Imagens",
+      "descricao": "ComfyUI: vídeo vertical da criatura voadora e gerador de imagens próprio.",
+      "icone": "imagem",
+      "cor": "#f7a8e0",
+      "palavras": ["comfyui", "comfy", "stable-diffusion", "sd-webui"],
+      "pastas": [],
+      "url": "http://127.0.0.1:8188",
+      "porta": null
+    },
+    {
+      "nome": "Links Cloudflare",
+      "descricao": "Túneis do Cloudflare que deixam os projetos acessíveis por link.",
+      "icone": "nuvem",
+      "cor": "#f6a04d",
+      "palavras": ["cloudflared", "cloudflare"],
+      "processos": ["cloudflared"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    },
+    {
+      "nome": "Codenotch",
+      "descricao": "O notch que mostra o uso das IAs e se os agentes estão trabalhando.",
+      "icone": "notch",
+      "cor": "#9aa7ff",
+      "palavras": ["codenotch"],
+      "processos": ["codenotch"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    },
+    {
+      "nome": "Corpo Humano 3D",
+      "descricao": "Demonstração interativa do corpo humano girando.",
+      "icone": "corpo",
+      "cor": "#ff8f70",
+      "palavras": ["corpo-humano", "corpo_humano", "human-body", "anatomia"],
+      "pastas": [],
+      "url": "",
+      "porta": null
+    }
+  ]
+}
